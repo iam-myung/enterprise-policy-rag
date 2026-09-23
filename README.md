@@ -21,7 +21,7 @@
 
 ## 目录结构
 
-应用与配置在**仓库根**；Python 包为 `src/enterprise_policy_rag/`。详见 `.docs/SPEC.md` §3。分层依赖方向（import-linter 强制）：
+应用与配置在**仓库根**；Python 包为 `src/enterprise_policy_rag/`。分层依赖方向（import-linter 强制）：
 
 ```
 interfaces  → application → domain
