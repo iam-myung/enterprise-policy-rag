@@ -1,0 +1,42 @@
+# ============================================================
+# 根 .gitignore —— 仅跟踪 .docs/、enterprise_policy_rag/ 与本文件
+# ============================================================
+
+# ----- AI / 工具配置（不跟踪）-----
+.codebuddy/
+
+# ----- 旧 CASE 只读参考区（不跟踪、不修改、不发布）-----
+/06_基座_RAG-企业知识库-实战版/
+/07_可吸收_CASE1-知识库处理场景/
+/08_可吸收_ragas-demo/
+/09_可吸收_CASE-切片策略/
+/10_可吸收_CASE-ChatPDF-Faiss/
+
+# ----- 新工程运行产物 -----
+enterprise_policy_rag/workspace/
+enterprise_policy_rag/artifacts/
+
+# ----- 密钥与环境变量 -----
+.env
+.env.*
+!.env.example
+*.key
+*.pem
+*.p12
+*.pfx
+*.p8
+credentials*.json
+service-account*.json
+
+# ----- 通用 Python / 编辑器 -----
+__pycache__/
+*.py[cod]
+.venv/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+.idea/
+.vscode/
+*.log

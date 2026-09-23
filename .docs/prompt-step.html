@@ -1,0 +1,1222 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Prompt-Step Checklist — 企业内部制度知识库问答系统</title>
+<style>
+  :root {
+    --bg: #0f1218;
+    --surface: #171c25;
+    --surface-2: #1e2530;
+    --border: #2a3342;
+    --text: #e8edf5;
+    --muted: #8b97a8;
+    --accent: #3d9a78;
+    --accent-dim: #2a6b54;
+    --warn: #c9a227;
+    --radius: 8px;
+    --font: "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+    --mono: "Cascadia Code", "Consolas", "SF Mono", monospace;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: var(--font);
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.5;
+    min-height: 100vh;
+  }
+
+  header {
+    position: sticky;
+    top: 0;
+    z-index: 40;
+    background: rgba(15, 18, 24, 0.92);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--border);
+    padding: 12px 20px 14px;
+  }
+
+  .header-top {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px 16px;
+    margin-bottom: 10px;
+  }
+
+  h1 { font-size: 1.05rem; font-weight: 600; letter-spacing: 0.02em; }
+
+  .subtitle { color: var(--muted); font-size: 0.8rem; }
+
+  .header-actions {
+    margin-left: auto;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    align-items: center;
+  }
+
+  .progress-wrap { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+
+  .progress-bar {
+    flex: 1;
+    height: 6px;
+    background: var(--surface-2);
+    border-radius: 3px;
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, var(--accent-dim), var(--accent));
+    border-radius: 3px;
+    transition: width 0.25s ease;
+  }
+
+  .progress-label {
+    font-size: 0.8rem;
+    color: var(--muted);
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+
+  .nav-chapters { display: flex; flex-wrap: wrap; gap: 6px; }
+
+  .chip, button.btn {
+    font: inherit;
+    font-size: 0.78rem;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--text);
+    border-radius: 6px;
+    padding: 5px 10px;
+    cursor: pointer;
+    text-decoration: none;
+    transition: background 0.15s, border-color 0.15s, color 0.15s;
+  }
+
+  .chip:hover, button.btn:hover { background: var(--surface-2); border-color: #3d4a5c; }
+
+  .chip.active {
+    border-color: var(--accent);
+    color: #9fe0c4;
+    background: rgba(61, 154, 120, 0.15);
+  }
+
+  button.btn.ghost { background: transparent; }
+
+  label.filter {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.78rem;
+    color: var(--muted);
+    cursor: pointer;
+    user-select: none;
+  }
+
+  main { max-width: 880px; margin: 0 auto; padding: 20px 16px 80px; }
+
+  .intro {
+    color: var(--muted);
+    font-size: 0.88rem;
+    margin-bottom: 20px;
+    padding: 12px 14px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+  }
+
+  .intro code {
+    font-family: var(--mono);
+    font-size: 0.82em;
+    color: #b8c4d4;
+    background: var(--bg);
+    padding: 1px 5px;
+    border-radius: 3px;
+  }
+
+  .chapter { margin-bottom: 28px; scroll-margin-top: 150px; }
+
+  .chapter-title {
+    font-size: 0.95rem;
+    font-weight: 600;
+    margin-bottom: 12px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid var(--border);
+    color: #c5d0e0;
+  }
+
+  .step {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    margin-bottom: 10px;
+    overflow: hidden;
+    transition: opacity 0.2s, border-color 0.2s;
+  }
+
+  .step.done { border-color: rgba(61, 154, 120, 0.35); opacity: 0.72; }
+  .step.done .step-title { text-decoration: line-through; color: var(--muted); }
+  .step.hidden { display: none; }
+
+  .step-head {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 12px 14px;
+    cursor: pointer;
+    user-select: none;
+  }
+
+  .step-head:hover { background: rgba(255, 255, 255, 0.02); }
+
+  .step-check {
+    margin-top: 2px;
+    width: 18px;
+    height: 18px;
+    accent-color: var(--accent);
+    cursor: pointer;
+    flex-shrink: 0;
+  }
+
+  .step-meta { flex: 1; min-width: 0; }
+
+  .step-title { font-size: 0.92rem; font-weight: 560; margin-bottom: 4px; }
+
+  .step-sub {
+    font-size: 0.78rem;
+    color: var(--muted);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 10px;
+    align-items: center;
+  }
+
+  .badge {
+    display: inline-block;
+    font-size: 0.7rem;
+    font-weight: 600;
+    padding: 2px 7px;
+    border-radius: 4px;
+    letter-spacing: 0.02em;
+    white-space: nowrap;
+  }
+
+  .badge.architect { background: rgba(155, 123, 237, 0.2); color: #c4b0f5; }
+  .badge.backend   { background: rgba(61, 154, 120, 0.2);  color: #7dceb0; }
+  .badge.llm       { background: rgba(155, 123, 237, 0.2); color: #c4b0f5; }
+  .badge.frontend  { background: rgba(91, 141, 239, 0.2);  color: #9bb8f5; }
+  .badge.qa        { background: rgba(212, 131, 74, 0.2);  color: #e8b48a; }
+  .badge.data      { background: rgba(212, 112, 155, 0.2); color: #f0a8c8; }
+  .badge.debug     { background: rgba(224, 108, 117, 0.2); color: #f0a0a6; }
+
+  .step-actions { display: flex; gap: 6px; flex-shrink: 0; padding-top: 1px; }
+
+  .step-actions .btn { padding: 3px 10px; }
+
+  .step-body { display: none; border-top: 1px solid var(--border); padding: 0; }
+  .step.open .step-body { display: block; }
+
+  .prompt-box {
+    margin: 0;
+    padding: 14px 16px;
+    background: var(--bg);
+    font-family: var(--mono);
+    font-size: 0.78rem;
+    line-height: 1.55;
+    white-space: pre-wrap;
+    word-break: break-word;
+    color: #c8d2e0;
+    max-height: 360px;
+    overflow: auto;
+  }
+
+  .toast {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%) translateY(20px);
+    background: var(--accent-dim);
+    color: #fff;
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s, transform 0.2s;
+    z-index: 100;
+    border: 1px solid var(--accent);
+  }
+
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  @media (max-width: 640px) {
+    .step-head { flex-wrap: wrap; }
+    .step-actions { width: 100%; justify-content: flex-end; }
+    .header-actions { margin-left: 0; width: 100%; }
+  }
+</style>
+</head>
+<body>
+  <header>
+    <div class="header-top">
+      <div>
+        <h1>Prompt-Step Checklist</h1>
+        <div class="subtitle">企业内部制度知识库问答系统 · RED→GREEN→QA · 无 RED 证据禁 GREEN</div>
+      </div>
+      <div class="header-actions">
+        <label class="filter">
+          <input type="checkbox" id="filterTodo" />
+          只看未完成
+        </label>
+        <button type="button" class="btn ghost" id="expandAll">展开全部</button>
+        <button type="button" class="btn ghost" id="collapseAll">收起全部</button>
+        <button type="button" class="btn" id="resetProgress" title="清除本地勾选进度">重置进度</button>
+      </div>
+    </div>
+    <div class="progress-wrap">
+      <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+      <span class="progress-label" id="progressLabel">0 / 0</span>
+    </div>
+    <nav class="nav-chapters" id="navChapters"></nav>
+  </header>
+
+  <main>
+    <p class="intro">
+      <strong>硬规则：</strong>未粘贴本 Step 的 <code>*-RED</code> 真实失败证据（命令+退出码+失败断言），禁止开启对应 <code>*-GREEN</code> 对话。
+      文档：<code>.docs/SPEC.md</code>（唯一事实来源）。
+      实现类统一 <code>N-RED → N-GREEN →（章）N-QA</code>；分对话执行；GREEN 禁止改 RED 断言；一次只做一个 Step；旧 CASE 只读；代码仅 <code>enterprise_policy_rag/</code>。对齐 SPEC §11（八条防线 / 七段循环 / DoD）。
+    </p>
+    <div id="app"></div>
+  </main>
+
+  <div class="toast" id="toast">已复制</div>
+
+<script>
+const STORAGE_KEY = "prompt-step.enterprise-policy-rag.v1";
+
+const ROLE_CLASS = {
+  "System-Architect": "architect",
+  "Backend": "backend",
+  "LLM-Backend": "llm",
+  "Frontend": "frontend",
+  "QA-Test": "qa",
+  "Data-Analyst": "data",
+  "Debug": "debug",
+};
+
+const CHAPTERS = [
+  {
+    id: "c0",
+    title: "Step 0 — 新工程骨架与旧 CASE 只读防线",
+    steps: [
+      {
+        id: "0-BUILD",
+        title: "初始化骨架与旧 CASE 防线",
+        role: "System-Architect",
+        unit: "enterprise_policy_rag/ 骨架 + tools/legacy_guard.py + legacy_manifest.json",
+        prompt: `@.codebuddy/agents/System-Architect.md
+@.docs/SPEC.md
+@.docs/prompt-step.html
+
+只做 Step 0-BUILD。范围仅限：初始化新工程骨架与旧 CASE 只读防线，禁止写任何业务实现。
+
+交付：
+1) 建 enterprise_policy_rag/ 目录骨架：pyproject.toml、uv.lock、README.md、.env.example、
+   .gitignore、importlinter.ini、alembic.ini、docker-compose.yml、Dockerfile。
+2) 建 src/enterprise_policy_rag/ 分层空包（domain/application/adapters/interfaces 及
+   SPEC §3 所列子目录，含 __init__.py 与 composition.py 占位注释）。
+3) 建 tests/{factories,unit,contract,integration,smoke,architecture}/、evaluation/{cases,rubrics}/、
+   data/sample_policies/、workspace/{uploads,parsed,indexes,database}/、artifacts/{evaluation,smoke,demos}/。
+4) tools/legacy_guard.py + tools/legacy_manifest.json：对 5 个旧 CASE 目录每个文件记录
+   相对路径/大小/SHA-256；guard 提供「基线校验」与「新源码运行时引用检查」两个入口。
+5) 根目录初始化 Git：.gitignore 排除 5 个旧 CASE 目录与 workspace/artifacts/密钥等；
+   仅跟踪 .docs/、enterprise_policy_rag/ 与根 .gitignore。
+
+验收：guard 对当前旧 CASE 零漂移；模拟一次 manifest 篡改被 guard 阻断；目录结构与 SPEC §3 一致。`
+      },
+      {
+        id: "0-QA",
+        title: "旧 CASE 防线验收",
+        role: "QA-Test",
+        unit: "guard 零漂移 + 篡改阻断证据",
+        prompt: `@.codebuddy/agents/QA-Test.md
+@.docs/SPEC.md
+@.docs/prompt-step.html
+
+只做 Step 0-QA。只验收不改代码。
+
+验收点：
+① legacy_guard 基线零漂移通过；
+② 人为篡改旧 CASE 一个字节，guard 能报出差异并非零退出；
+③ 新源码无 sys.path/相对导入指向旧 CASE；
+④ Git 跟踪清单不含旧 CASE、workspace、.env、密钥。
+
+输出：Pass / Fail / PASS with risks / BLOCK。`
+      },
+    ],
+  },
+  {
+    id: "c1",
+    title: "Step 1 — Result·ErrorCode·Envelope 契约",
+    steps: [
+      {
+        id: "1-RED",
+        title: "契约测试（失败证据）",
+        role: "Backend",
+        unit: "tests/contract/ Envelope·ErrorCode 契约测试",
+        prompt: `@.codebuddy/agents/Backend.md
+@.docs/SPEC.md
+@.docs/prompt-step.html
+
+只做 Step 1-RED。只写测试并运行，保存真实失败证据，禁止写实现。
+
+编写 tests/contract/：
+① Envelope 互斥：success=true ⇒ data 非空且 error=null；success=false ⇒ data=null 且 error 非空。
+② ErrorCode 全集与 HTTP 映射（SPEC §6.2 表）逐一断言。
+③ error.context 白名单脱敏：含密钥/绝对路径/完整原文的字段被拒绝。
+
+运行并保存「模块不存在」的失败输出作为 RED 证据。`
+      },
+      {
+        id: "1-GREEN",
+        title: "最小实现",
+        role: "Backend",
+        unit: "domain/errors.py + domain/result.py + contracts DTO",
+        prompt: `@.codebuddy/agents/Backend.md
+@.docs/SPEC.md
+@.docs/prompt-step.html
+
+只做 Step 1-GREEN。只写满足 1-RED 的最小实现，禁止改测试断言、禁止扩范围。
+
+实现：domain/errors.py（ErrorCode 枚举+分类）、domain/result.py（OperationEnvelope[T]、
+AnswerStatus、统一错误结构）、application/contracts/ 的 Pydantic DTO 骨架。
+
+约束：domain 只依赖标准库，禁止导入 FastAPI/Pydantic/SQLAlchemy。
+
+验收：1-RED 全部通过；import-linter 零违规。`
+      },
+      {
+        id: "1-QA",
+        title: "契约验收",
+        role: "QA-Test",
+        unit: "Envelope 互斥 + ErrorCode 映射验收",
+        prompt: `@.codebuddy/agents/QA-Test.md
+@.docs/SPEC.md
+@.docs/prompt-step.html
+
+只做 Step 1-QA。只验收不改代码。
+
+验收点：Envelope 成功/失败序列化互斥、ErrorCode→HTTP 映射完整、脱敏字段拒绝、domain 无框架依赖。
+
+输出：Pass / Fail / PASS with risks / BLOCK。`
+      },
+    ],
+  },
+  {
+    id: "c2",
+    title: "Step 2 — 制度实体与状态规则",
+    steps: [
+      {
+        id: "2-RED",
+        title: "实体不变量与状态机测试",
+        role: "Backend",
+        unit: "tests/unit/ 实体不变量·状态机测试",
+        prompt: `@.codebuddy/agents/Backend.md
+@.docs/SPEC.md
+@.docs/prompt-step.html
+
+只做 Step 2-RED。只写单元测试并保存失败证据。
+
+针对 SPEC §4 写 tests/unit/：
+① PolicyDocument 不变量：expires_at ≥ effective_at；缺元数据显式待确认。
+② 文档状态机 PENDING→PROCESSING→ACTIVE/FAILED、ACTIVE→SUPERSEDED/EXPIRED、FAILED→PROCESSING(仅重试) 合法/非法迁移。
+③ KnowledgeChunk：ordinal 唯一、text==source_text[char_start:char_end]、不跨页。
+④ Evidence.quote 必须由已存页文本按字符区间截取。`
+      },
+      {
+        id: "2-GREEN",
+        title: "领域实体与状态规则实现",
+        role: "Backend",
+        unit: "domain/entities.py + policy_rules.py",
+        prompt: `@.codebuddy/agents/Backend.md
+@.docs/SPEC.md
+@.docs/prompt-step.html
+
+只做 Step 2-GREEN。只写满足 2-RED 的最小实现。
+
+实现：domain/entities.py（PolicyDocument/KnowledgeChunk/ParsedPage/CorpusSnapshot/Evidence）、
+domain/value_objects.py、domain/policy_rules.py（状态机纯函数）。
+
+约束：domain 只依赖标准库。
+
+验收：2-RED 通过；Domain 行覆盖>90%、分支>80%。`
+      },
+      {
+        id: "2-QA",
+        title: "状态规则验收",
+        role: "QA-Test",
+        unit: "状态迁移·日期·重复规则验收",
+        prompt: `@.codebuddy/agents/QA-Test.md
+@.docs/SPEC.md
+@.docs/prompt-step.html
+
+只做 Step 2-QA。只验收不改代码。
+
+验收点：状态迁移合法/非法边界、日期边界、同内容 sha256 重复规则、chunk 字符区间不变量。
+
+输出：Pass / Fail / PASS with risks / BLOCK。`
+      },
+    ],
+  },
+  {
+    id: "c3",
+    title: "Step 3 — SQLite·Corpus Revision·迁移",
+    steps: [
+      {
+        id: "3-RED",
+        title: "表结构·迁移·revision 测试",
+        role: "Backend",
+        unit: "tests/contract+integration 表结构·迁移·revision",
+        prompt: `@.codebuddy/agents/Backend.md
+@.docs/SPEC.md
+@.docs/prompt-step.html
+
+只做 Step 3-RED。只写合同/迁移测试并保存失败证据。
+
+编写 tests/contract/ + tests/integration/：
+① SPEC §7.1 七张表结构与约束（UNIQUE/partial unique index「status=ACTIVE 至多一行」）。
+② Alembic upgrade/downgrade 往返在临时 SQLite 上通过；空库与已有数据两类迁移测试。
+③ CorpusRevisionRepository：原子切换 active revision，任一时刻唯一 ACTIVE。`
+      },
+      {
+        id: "3-GREEN",
+        title: "持久化适配器与迁移实现",
+        role: "Backend",
+        unit: "sqlite_models.py + document_repository.py + migrations/",
+        prompt: `@.codebuddy/agents/Backend.md
+@.docs/SPEC.md
+@.docs/prompt-step.html
+
+只做 Step 3-GREEN。只写满足 3-RED 的最小实现。
+
+实现：adapters/persistence/sqlite_models.py、document_repository.py、
+adapters/persistence/migrations/（Alembic 脚本）、application/ports/repositories.py 契约。
+
+约束：只有 Repository Adapter 访问 SQLite；业务规则不入适配器。
+
+验收：3-RED 通过；Alembic 是唯一 schema 变更入口。`
+      },
+      {
+        id: "3-QA",
+        title: "迁移与 revision 验收",
+        role: "QA-Test",
+        unit: "upgrade/downgrade + 唯一 ACTIVE revision",
+        prompt: `@.codebuddy/agents/QA-Test.md
+@.docs/SPEC.md
+@.docs/prompt-step.html
+
+只做 Step 3-QA。只验收不改代码。
+
+验收点：upgrade/downgrade 往返、唯一 ACTIVE revision 原子切换、无运行时自动建表、路径白名单。
+
+输出：Pass / Fail / PASS with risks / BLOCK。`
+      },
+    ],
+  },
+  {
+    id: "c4",
+    title: "Step 4 — 文件安全·MinerU 解析",
+    steps: [
+      {
+        id: "4-RED",
+        title: "文件校验·ParserPort 测试",
+        role: "LLM-Backend",
+        unit: "tests 文件校验·ParserPort·路径白名单",
+        prompt: `@.codebuddy/agents/LLM-Backend.md
+@.docs/SPEC.md
+@.docs/prompt-step.html
+
+只做 Step 4-RED。只写测试并保存失败证据。
+
+编写 tests/unit/ + tests/contract/：
+① 文件校验：扩展名/MIME/PDF 魔数/大小/解析页数；非 PDF、魔数不匹配、超限分别抛
+   UNSUPPORTED_FILE_TYPE / FILE_TOO_LARGE。
+② DocumentParserPort 输出 ParsedDocumentDTO 保留页码、页文本、页文本 sha256。
+③ 越界路径（..、绝对路径、软链接）被 Path.resolve 白名单拒绝。`
+      },
+      {
+        id: "4-GREEN",
+        title: "ParserPort 与 MinerU 适配器实现",
+        role: "LLM-Backend",
+        unit: "document_parser.py(port) + mineru_parser.py",
+        prompt: `@.codebuddy/agents/LLM-Backend.md
+@.docs/SPEC.md
+@.docs/prompt-step.html
+
+只做 Step 4-GREEN。只写满足 4-RED 的最小实现。
+
+实现：application/ports/document_parser.py（DocumentParserPort + ParsedDocumentDTO）、
+adapters/document/mineru_parser.py、文件安全校验逻辑。
+
+约束：Adapter 捕获基础设施异常并映射为安全 ErrorCode；不写旧 CASE；保留页码从 1 开始。
+
+验收：4-RED 通过；用 data/sample_policies/ 一份样例 PDF 做真实 smoke，页数/页文本/hash 可复核。`
+      },
+      {
+        id: "4-QA",
+        title: "解析与安全验收",
+        role: "QA-Test",
+        unit: "四类拒绝 + 页码 + hash 验收",
+        prompt: `@.codebuddy/agents/QA-Test.md
+@.docs/SPEC.md
+@.docs/prompt-step.html
+
+只做 Step 4-QA。只验收不改代码。
+
+验收点：文件校验四类拒绝、页码保留、页文本 hash 稳定、越界路径拒绝、异常脱敏。
+
+输出：Pass / Fail / PASS with risks / BLOCK。`
+      },
+    ],
+  },
+  {
+    id: "c5",
+    title: "Step 5 — 页内切片·原子发布",
+    steps: [
+      {
+        id: "5-RED",
+        title: "切片纯函数·原子发布测试",
+        role: "Backend",
+        unit: "tests chunk 纯函数·IngestPolicy 原子发布",
+        prompt: `@.codebuddy/agents/Backend.md
+@.docs/SPEC.md
+@.docs/prompt-step.html
+
+只做 Step 5-RED。只写测试并保存失败证据。
+
+编写 tests/unit/ + tests/integration/：
+① chunk_pages 纯函数：输入 tuple[ParsedPage,...] → chunks；同输入 hash 一致；不跨页；
+   char_start/char_end 可回源定位；ordinal 唯一。
+② IngestPolicy 原子发布：新索引构建成功前旧 CorpusSnapshot 继续服务；
+   构建失败不切换 active revision；同 sha256 返回 DUPLICATE_DOCUMENT。`
+      },
+      {
+        id: "5-GREEN",
+        title: "切片与导入编排实现",
+        role: "Backend",
+        unit: "chunk_pages.py + ingest_policy.py",
+        prompt: `@.codebuddy/agents/Backend.md
+@.docs/SPEC.md
+@.docs/prompt-step.html
+
+只做 Step 5-GREEN。只写满足 5-RED 的最小实现。
+
+实现：application/ingestion/chunk_pages.py（纯切片函数）、application/ingestion/ingest_policy.py
+（IngestPolicy 编排：读取→解析→切片→建索引→事务内切换 revision）。
+
+约束：切片与 RRF 均为 Application 纯函数，不走 Port；不引入 LLM 语义切片。
+
+验收：5-RED 通过；失败路径不切换旧 revision。`
+      },
+      {
+        id: "5-QA",
+        title: "切片与发布验收",
+        role: "QA-Test",
+        unit: "hash 一致 + 失败不切换 revision",
+        prompt: `@.codebuddy/agents/QA-Test.md
+@.docs/SPEC.md
+@.docs/prompt-step.html
+
+只做 Step 5-QA。只验收不改代码。
+
+验收点：同输入 hash 一致、失败不切换旧 revision、重复导入拦截、临时文件清理、超时。
+
+输出：Pass / Fail / PASS with risks / BLOCK。`
+      },
+    ],
+  },
+  {
+    id: "c6",
+    title: "Step 6 — 纯向量基线索引与检索",
+    steps: [
+      {
+        id: "6-RED",
+        title: "DenseIndexPort·命中测试",
+        role: "LLM-Backend",
+        unit: "tests DenseIndexPort·FAISS·命中 gold 页",
+        prompt: `@.codebuddy/agents/LLM-Backend.md
+@.docs/SPEC.md
+@.docs/prompt-step.html
+
+只做 Step 6-RED。只写测试并保存失败证据。
+
+编写 tests/contract/ + tests/integration/：
+① DenseIndexPort：索引按 corpus revision 隔离；query 返回 evidence candidates。
+② FAISS 索引 receipt 可复核；候选按距离有序。
+③ 用固定问题命中 gold evidence 页（基线 top 5 纯向量）。`
+      },
+      {
+        id: "6-GREEN",
+        title: "Embedding 与 FAISS 适配器实现",
+        role: "LLM-Backend",
+        unit: "dashscope_embeddings.py + faiss_index.py",
+        prompt: `@.codebuddy/agents/LLM-Backend.md
+@.docs/SPEC.md
+@.docs/prompt-step.html
+
+只做 Step 6-GREEN。只写满足 6-RED 的最小实现。
+
+实现：application/ports/retrieval.py（DenseIndexPort）、adapters/llm/dashscope_embeddings.py、
+adapters/retrieval/faiss_index.py。
+
+约束：不可信 pickle 禁止加载；索引目录按 revision 隔离；Embedding 30s 超时。
+
+验收：6-RED 通过；真实 Embedding smoke 命中样例页。`
+      },
+      {
+        id: "6-QA",
+        title: "向量基线验收",
+        role: "QA-Test",
+        unit: "revision 隔离 + 命中验收",
+        prompt: `@.codebuddy/agents/QA-Test.md
+@.docs/SPEC.md
+@.docs/prompt-step.html
+
+只做 Step 6-QA。只验收不改代码。
+
+验收点：revision 隔离、固定问题命中 gold 页、无 pickle 反序列化、Provider 失败映射 502。
+
+输出：Pass / Fail / PASS with risks / BLOCK。`
+      },
+    ],
+  },
+  {
+    id: "c7",
+    title: "Step 7 — BM25·RRF 融合",
+    steps: [
+      {
+        id: "7-RED",
+        title: "BM25 重建·RRF 纯函数测试",
+        role: "LLM-Backend",
+        unit: "tests BM25 重建·RRF 纯函数",
+        prompt: `@.codebuddy/agents/LLM-Backend.md
+@.docs/SPEC.md
+@.docs/prompt-step.html
+
+只做 Step 7-RED。只写测试并保存失败证据。
+
+编写 tests/unit/ + tests/contract/：
+① BM25 从当前 revision chunks 确定性重建（不用 pickle），中文分词命中制度编号/专有词。
+② rrf_fusion 纯函数：输入两组候选 → 融合结果只来自两路输入；排序确定；RRF 参数化。`
+      },
+      {
+        id: "7-GREEN",
+        title: "BM25 与 RRF 实现",
+        role: "LLM-Backend",
+        unit: "bm25_index.py + rrf_fusion.py",
+        prompt: `@.codebuddy/agents/LLM-Backend.md
+@.docs/SPEC.md
+@.docs/prompt-step.html
+
+只做 Step 7-GREEN。只写满足 7-RED 的最小实现。
+
+实现：adapters/retrieval/bm25_index.py（SparseIndexPort）、application/qa/rrf_fusion.py（RRF 纯函数）。
+
+约束：BM25 从 SQLite 当前 revision chunks 重建；RRF 不用 Port、不混合分值尺度。
+
+验收：7-RED 通过；关键词命中；融合候选排序确定。`
+      },
+      {
+        id: "7-QA",
+        title: "混合召回验收",
+        role: "QA-Test",
+        unit: "确定性重建 + 排序确定验收",
+        prompt: `@.codebuddy/agents/QA-Test.md
+@.docs/SPEC.md
+@.docs/prompt-step.html
+
+只做 Step 7-QA。只验收不改代码。
+
+验收点：BM25 确定性重建、RRF 只来自两路输入、排序确定、无 pickle。
+
+输出：Pass / Fail / PASS with risks / BLOCK。`
+      },
+    ],
+  },
+  {
+    id: "c8",
+    title: "Step 8 — 重排·冲突判定",
+    steps: [
+      {
+        id: "8-RED",
+        title: "Reranker·ConflictDetector 合同测试",
+        role: "LLM-Backend",
+        unit: "tests Reranker·ConflictDetector 合同",
+        prompt: `@.codebuddy/agents/LLM-Backend.md
+@.docs/SPEC.md
+@.docs/prompt-step.html
+
+只做 Step 8-RED。只写测试并保存失败证据。
+
+编写 tests/unit/ + tests/contract/：
+① RerankerPort 只能返回已给定 evidence ID；失败按配置退化为 RRF 并标记 RERANKER_DEGRADED。
+② ConflictDetectorPort：返回 ConflictAssessmentDTO（is_conflict/claim_a/claim_b/evidence_ids/reason_code），
+   reason_code ∈ {MUTUALLY_EXCLUSIVE_RULES, APPLICABILITY_AMBIGUITY}；只引用输入 evidence ids。
+③ 冲突判定合同 SPEC §4.4 四条条件；版本取代关系不判冲突。`
+      },
+      {
+        id: "8-GREEN",
+        title: "重排与冲突判定实现",
+        role: "LLM-Backend",
+        unit: "qwen_reranker.py + 冲突判定 Adapter",
+        prompt: `@.codebuddy/agents/LLM-Backend.md
+@.docs/SPEC.md
+@.docs/prompt-step.html
+
+只做 Step 8-GREEN。只写满足 8-RED 的最小实现。
+
+实现：application/ports/models.py（RerankerPort/ConflictDetectorPort/模型 DTO）、
+adapters/retrieval/qwen_reranker.py、冲突判定 Adapter。
+
+约束：Detector 超时/非法输出 → Provider 失败 Envelope，不得继续给确定性结论；不裁决制度优先级。
+
+验收：8-RED 通过；真实 Provider smoke + 冲突/版本替代边界样本通过。`
+      },
+      {
+        id: "8-QA",
+        title: "重排与冲突验收",
+        role: "QA-Test",
+        unit: "退化 + 冲突四条件验收",
+        prompt: `@.codebuddy/agents/QA-Test.md
+@.docs/SPEC.md
+@.docs/prompt-step.html
+
+只做 Step 8-QA。只验收不改代码。
+
+验收点：重排只返回给定 ID、退化标记、冲突四条件、版本取代不误判、固定集含≥3 冲突边界样本。
+
+输出：Pass / Fail / PASS with risks / BLOCK。`
+      },
+    ],
+  },
+  {
+    id: "c9",
+    title: "Step 9 — 问答·引用校验",
+    steps: [
+      {
+        id: "9-RED",
+        title: "AskPolicy 三路径·引用校验测试",
+        role: "LLM-Backend",
+        unit: "tests AskPolicy 三路径·引用校验",
+        prompt: `@.codebuddy/agents/LLM-Backend.md
+@.docs/SPEC.md
+@.docs/prompt-step.html
+
+只做 Step 9-RED。只写测试并保存失败证据。
+
+编写 tests/unit/ + tests/contract/：
+① AskPolicy 三路径：ANSWERED（引用非空）/NO_EVIDENCE（不得含推测答案）/CONFLICT（满足 4.4 且引用互斥 claim 证据）。
+② 引用校验：模型返回未知 ID 或伪造引用 → CITATION_VALIDATION_FAILED；
+   quote 由系统从 chunk 按字符区间截取，模型只选 evidence ID，不得生成页码/原文。
+③ ChatModelPort 只引用给定 evidence ids；输出经 Pydantic 校验（SPEC §9.3）。`
+      },
+      {
+        id: "9-GREEN",
+        title: "问答编排与引用校验实现",
+        role: "LLM-Backend",
+        unit: "ask_policy.py + qwen_chat_model.py + citation_rules.py",
+        prompt: `@.codebuddy/agents/LLM-Backend.md
+@.docs/SPEC.md
+@.docs/prompt-step.html
+
+只做 Step 9-GREEN。只写满足 9-RED 的最小实现。
+
+实现：application/qa/ask_policy.py（AskPolicy 编排：检索→RRF→重排→阈值+冲突→生成→引用校验）、
+application/ports/models.py（ChatModelPort/ModelAnswerDTO）、adapters/llm/qwen_chat_model.py、
+domain/citation_rules.py（引用/quote 校验）、Prompt DTO（SPEC §9.3）。
+
+约束：禁止展示思维链；UI 只显示答案/边界状态/证据。
+
+验收：9-RED 通过；answered/no-evidence/conflict 三路径真实 smoke。`
+      },
+      {
+        id: "9-QA",
+        title: "问答与引用验收",
+        role: "QA-Test",
+        unit: "三路径 + 伪造引用拒绝验收",
+        prompt: `@.codebuddy/agents/QA-Test.md
+@.docs/SPEC.md
+@.docs/prompt-step.html
+
+只做 Step 9-QA。只验收不改代码。
+
+验收点：三路径、伪造引用拒绝、quote 子串校验、无思维链泄漏、Provider 失败映射 502。
+
+输出：Pass / Fail / PASS with risks / BLOCK。`
+      },
+    ],
+  },
+  {
+    id: "c10",
+    title: "Step 10 — API·原文回看",
+    steps: [
+      {
+        id: "10-RED",
+        title: "HTTP 合同测试",
+        role: "Backend",
+        unit: "tests/contract+smoke 四端点 HTTP 合同",
+        prompt: `@.codebuddy/agents/Backend.md
+@.docs/SPEC.md
+@.docs/prompt-step.html
+
+只做 Step 10-RED。只写 HTTP 合同测试并保存失败证据。
+
+编写 tests/contract/ + tests/smoke/：
+① GET /health → {status,database,corpus_revision,active_document_count}；503 INTERNAL_ERROR。
+② GET /api/v1/documents → {items, corpus_revision}。
+③ POST /api/v1/questions → QuestionAnswerDTO；top_k 1–10 校验；CitationDTO 含 source_url 站内相对路径。
+④ GET /api/v1/documents/{id}/source → PDF 流；404/409/422；拒绝任意文件路径。
+⑤ 所有响应统一 Envelope + X-Trace-Id 透传。`
+      },
+      {
+        id: "10-GREEN",
+        title: "FastAPI 路由与装配实现",
+        role: "Backend",
+        unit: "interfaces/api/* + composition.py",
+        prompt: `@.codebuddy/agents/Backend.md
+@.docs/SPEC.md
+@.docs/prompt-step.html
+
+只做 Step 10-GREEN。只写满足 10-RED 的最小实现。
+
+实现：interfaces/api/{app.py,dependencies.py,documents.py,questions.py,health.py}、
+composition.py（唯一装配入口）。
+
+约束：interfaces 只做传输/校验/Envelope 映射，不含业务逻辑；source_url 由 API 生成，不采信用户/模型。
+
+验收：10-RED 通过；合法页成功、越界路径拒绝。`
+      },
+      {
+        id: "10-QA",
+        title: "API 验收",
+        role: "QA-Test",
+        unit: "Envelope + 越界路径拒绝验收",
+        prompt: `@.codebuddy/agents/QA-Test.md
+@.docs/SPEC.md
+@.docs/prompt-step.html
+
+只做 Step 10-QA。只验收不改代码。
+
+验收点：四端点 Envelope/状态码、trace 透传、越界路径拒绝、source_url 安全、无业务逻辑泄漏。
+
+输出：Pass / Fail / PASS with risks / BLOCK。`
+      },
+    ],
+  },
+  {
+    id: "c11",
+    title: "Step 11 — Streamlit Demo UI",
+    steps: [
+      {
+        id: "11-BUILD",
+        title: "展示层实现",
+        role: "Frontend",
+        unit: "interfaces/ui/{app.py,api_client.py}",
+        prompt: `@.codebuddy/agents/Frontend.md
+@.docs/SPEC.md
+@.docs/prompt-step.html
+
+只做 Step 11-BUILD。只做展示层，不复制业务逻辑。
+
+交付：interfaces/ui/{app.py,api_client.py}。
+① UI 只调用 API client，不直连数据库/索引/模型。
+② 展示：问题输入、答案、ANSWERED/NO_EVIDENCE/CONFLICT 三态、引用（文件名/版本/页码/quote）、
+   原文回看入口、失败 Envelope 的可读提示。
+③ 文档处理状态区展示名称/版本/生效状态/处理状态/页数/失败原因。
+
+验收：Headless 启动 + DOM smoke；三态渲染正确；引用可点回看。`
+      },
+      {
+        id: "11-QA",
+        title: "UI 验收",
+        role: "QA-Test",
+        unit: "三态渲染 + 引用回看验收",
+        prompt: `@.codebuddy/agents/QA-Test.md
+@.docs/SPEC.md
+@.docs/prompt-step.html
+
+只做 Step 11-QA。只验收不改代码。
+
+验收点：三态展示、引用可回看、无直连 DB/模型、失败提示可读、headless smoke 通过。
+
+输出：Pass / Fail / PASS with risks / BLOCK。`
+      },
+    ],
+  },
+  {
+    id: "c12",
+    title: "Step 12 — 评测闭环",
+    steps: [
+      {
+        id: "12-BUILD",
+        title: "评测集与评测实现",
+        role: "Data-Analyst",
+        unit: "phase1.jsonl + evaluate_rag.py + cli/evaluate.py",
+        prompt: `@.codebuddy/agents/Data-Analyst.md
+@.docs/SPEC.md
+@.docs/prompt-step.html
+
+只做 Step 12-BUILD。只做评测，不改生产索引。
+
+交付：evaluation/cases/phase1.jsonl（≥20 条，含 answerable/conflict_expected/gold_evidence，
+   需要时才 reference_answer；gold 用文档引用+页码+quote_contains，不用 evidence_id）、
+   application/evaluation/evaluate_rag.py、interfaces/cli/evaluate.py、指标适用性（SPEC §7.2）。
+
+验收：基线与目标方案同 revision/同数据集/同回答模型对比，产出 Recall@K、引用正确率、忠实度、
+   拒答率、延迟、退化标记；无法计算返回 NOT_APPLICABLE。`
+      },
+      {
+        id: "12-QA",
+        title: "评测验收",
+        role: "QA-Test",
+        unit: "同集对比 + 指标适用性验收",
+        prompt: `@.codebuddy/agents/QA-Test.md
+@.docs/SPEC.md
+@.docs/prompt-step.html
+
+只做 Step 12-QA。只验收不改代码。
+
+验收点：同集同模型对比、gold 标注稳定不漂移、指标适用性、NOT_APPLICABLE 不记 0/PASS、报告记录配置与 revision。
+
+输出：Pass / Fail / PASS with risks / BLOCK。`
+      },
+    ],
+  },
+  {
+    id: "c13",
+    title: "Step 13 — 质量门禁·求职证据",
+    steps: [
+      {
+        id: "13-BUILD",
+        title: "全链路门禁与证据汇总",
+        role: "QA-Test",
+        unit: "CI + 性能报告 + 失败案例 + Demo 证据",
+        prompt: `@.codebuddy/agents/QA-Test.md
+@.docs/SPEC.md
+@.docs/prompt-step.html
+
+只做 Step 13-BUILD。只做全链路门禁与证据汇总。
+
+交付：CI 配置（import-linter/legacy_guard/ruff/mypy --strict/pytest 分层/secret scan/依赖安全）、
+   性能报告（SPEC §10.3 门槛实测）、失败案例、README 演示截图/录屏、Docker Compose E2E。
+
+验收：SPEC §15 Phase 1 Gate 八条证据全部存在；三条演示路径（可回答/拒答/冲突）通过。`
+      },
+      {
+        id: "13-QA",
+        title: "最终 Gate 验收",
+        role: "Debug",
+        unit: "八条 Gate 证据齐备验收",
+        prompt: `@.codebuddy/agents/Debug.md
+@.docs/SPEC.md
+@.docs/prompt-step.html
+
+只做 Step 13-QA。只验收不改代码。
+
+验收点：§15 八条 Gate 证据齐备、架构/静态/类型/安全扫描零违规、Docker Compose E2E 通过、证据可复核。
+
+输出：Pass / Fail / PASS with risks / BLOCK。`
+      },
+    ],
+  },
+];
+
+// ---- 状态与工具 ----
+function loadDone() {
+  try { return new Set(JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]")); }
+  catch { return new Set(); }
+}
+function saveDone(set) {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify([...set]));
+}
+function showToast(msg) {
+  const t = document.getElementById("toast");
+  t.textContent = msg;
+  t.classList.add("show");
+  clearTimeout(showToast._t);
+  showToast._t = setTimeout(() => t.classList.remove("show"), 1600);
+}
+function copyText(text, done) {
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(text).then(done).catch(() => fallbackCopy(text, done));
+  } else {
+    fallbackCopy(text, done);
+  }
+}
+function fallbackCopy(text, done) {
+  const ta = document.createElement("textarea");
+  ta.value = text;
+  ta.style.position = "fixed";
+  ta.style.opacity = "0";
+  document.body.appendChild(ta);
+  ta.select();
+  try { document.execCommand("copy"); done(); } catch (e) {}
+  document.body.removeChild(ta);
+}
+
+// ---- 渲染 ----
+const doneSet = loadDone();
+const stepEls = [];  // { id, el }
+const chapterEls = [];
+
+function render() {
+  const appEl = document.getElementById("app");
+  const navEl = document.getElementById("navChapters");
+
+  CHAPTERS.forEach(ch => {
+    const a = document.createElement("a");
+    a.className = "chip";
+    a.href = "#" + ch.id;
+    a.textContent = ch.id + " " + ch.title.replace(/^Step \d+ — /, "");
+    navEl.appendChild(a);
+
+    const sec = document.createElement("section");
+    sec.className = "chapter";
+    sec.id = ch.id;
+    chapterEls.push(sec);
+
+    const title = document.createElement("div");
+    title.className = "chapter-title";
+    title.textContent = ch.title;
+    sec.appendChild(title);
+
+    ch.steps.forEach(st => {
+      const card = document.createElement("div");
+      card.className = "step";
+      if (doneSet.has(st.id)) card.classList.add("done");
+
+      const head = document.createElement("div");
+      head.className = "step-head";
+
+      const check = document.createElement("input");
+      check.type = "checkbox";
+      check.className = "step-check";
+      check.checked = doneSet.has(st.id);
+      check.addEventListener("click", e => e.stopPropagation());
+      check.addEventListener("change", () => {
+        if (check.checked) { doneSet.add(st.id); card.classList.add("done"); }
+        else { doneSet.delete(st.id); card.classList.remove("done"); }
+        saveDone(doneSet);
+        applyFilter();
+        updateProgress();
+      });
+
+      const meta = document.createElement("div");
+      meta.className = "step-meta";
+      const titleEl = document.createElement("div");
+      titleEl.className = "step-title";
+      titleEl.textContent = "Step " + st.id + " — " + st.title;
+      const sub = document.createElement("div");
+      sub.className = "step-sub";
+      const badge = document.createElement("span");
+      badge.className = "badge " + (ROLE_CLASS[st.role] || "backend");
+      badge.textContent = st.role;
+      const unit = document.createElement("span");
+      unit.textContent = st.unit;
+      sub.appendChild(badge);
+      sub.appendChild(unit);
+      meta.appendChild(titleEl);
+      meta.appendChild(sub);
+
+      const actions = document.createElement("div");
+      actions.className = "step-actions";
+      const copyBtn = document.createElement("button");
+      copyBtn.type = "button";
+      copyBtn.className = "btn ghost";
+      copyBtn.textContent = "复制";
+      copyBtn.addEventListener("click", e => {
+        e.stopPropagation();
+        copyText(st.prompt, () => showToast("已复制 Step " + st.id));
+      });
+      actions.appendChild(copyBtn);
+
+      head.appendChild(check);
+      head.appendChild(meta);
+      head.appendChild(actions);
+      head.addEventListener("click", () => card.classList.toggle("open"));
+
+      const body = document.createElement("div");
+      body.className = "step-body";
+      const pre = document.createElement("pre");
+      pre.className = "prompt-box";
+      pre.textContent = st.prompt;
+      body.appendChild(pre);
+
+      card.appendChild(head);
+      card.appendChild(body);
+      sec.appendChild(card);
+      stepEls.push({ id: st.id, el: card });
+    });
+
+    appEl.appendChild(sec);
+  });
+
+  updateProgress();
+}
+
+function updateProgress() {
+  const total = stepEls.length;
+  const done = stepEls.filter(s => doneSet.has(s.id)).length;
+  document.getElementById("progressFill").style.width = (total ? (done / total) * 100 : 0) + "%";
+  document.getElementById("progressLabel").textContent = done + " / " + total;
+}
+
+function applyFilter() {
+  const filter = document.getElementById("filterTodo").checked;
+  stepEls.forEach(s => {
+    s.el.classList.toggle("hidden", filter && doneSet.has(s.id));
+  });
+}
+
+render();
+
+// ---- 交互 ----
+document.getElementById("expandAll").addEventListener("click", () => {
+  stepEls.forEach(s => s.el.classList.add("open"));
+});
+document.getElementById("collapseAll").addEventListener("click", () => {
+  stepEls.forEach(s => s.el.classList.remove("open"));
+});
+document.getElementById("resetProgress").addEventListener("click", () => {
+  doneSet.clear();
+  saveDone(doneSet);
+  stepEls.forEach(s => {
+    s.el.classList.remove("done");
+    const cb = s.el.querySelector(".step-check");
+    if (cb) cb.checked = false;
+  });
+  updateProgress();
+  applyFilter();
+});
+document.getElementById("filterTodo").addEventListener("change", applyFilter);
+
+// 章节导航高亮
+const chips = [...document.querySelectorAll(".nav-chapters .chip")];
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(en => {
+    if (en.isIntersecting) {
+      chips.forEach(c => c.classList.toggle("active", c.getAttribute("href") === "#" + en.target.id));
+    }
+  });
+}, { rootMargin: "-40% 0px -55% 0px" });
+chapterEls.forEach(sec => observer.observe(sec));
+</script>
+</body>
+</html>

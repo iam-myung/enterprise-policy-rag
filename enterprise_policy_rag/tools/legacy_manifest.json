@@ -1,0 +1,385 @@
+{
+  "schema_version": 1,
+  "generated_at_utc": "2026-09-13T13:34:28.337930+00:00",
+  "description": "旧 CASE 只读基线（SPEC §1.1）。记录每个旧文件相对项目根的路径/大小/SHA-256。",
+  "legacy_directories": [
+    "06_基座_RAG-企业知识库-实战版",
+    "07_可吸收_CASE1-知识库处理场景",
+    "08_可吸收_ragas-demo",
+    "09_可吸收_CASE-切片策略",
+    "10_可吸收_CASE-ChatPDF-Faiss"
+  ],
+  "file_count": 74,
+  "files": [
+    {
+      "path": "06_基座_RAG-企业知识库-实战版/.gitignore",
+      "size": 3333,
+      "sha256": "dbac7a061d4f28bc7908ca7cb3a4b92a9e6b0e526a417b83f9fceaf896f248e6"
+    },
+    {
+      "path": "06_基座_RAG-企业知识库-实战版/LICENSE",
+      "size": 1060,
+      "sha256": "a5757dd05a4362fa83d9782d5ab1a0d2473b5f38d3ed94ea5aa1af7b0b4ef7cf"
+    },
+    {
+      "path": "06_基座_RAG-企业知识库-实战版/README.md",
+      "size": 3695,
+      "sha256": "ac671b29e82248f8f8baeb590db8575575abec5cc5b0ec669618520f36d45c99"
+    },
+    {
+      "path": "06_基座_RAG-企业知识库-实战版/UI界面参考-之前.png",
+      "size": 177724,
+      "sha256": "43eb6aedad2d703fd53b1a49d37c5c878400147de237e30029ae501a8e898a7d"
+    },
+    {
+      "path": "06_基座_RAG-企业知识库-实战版/UI界面参考-完成.png",
+      "size": 371145,
+      "sha256": "ef6e9112d8b314cd252af8af910422fc521dfe9072c3625c6146ce15ebf95097"
+    },
+    {
+      "path": "06_基座_RAG-企业知识库-实战版/app/app_streamlit.py",
+      "size": 3852,
+      "sha256": "852e79609382484c21c71a095f876dc80d32aa5960a53be5c6ff551723d6e19d"
+    },
+    {
+      "path": "06_基座_RAG-企业知识库-实战版/app/main.py",
+      "size": 2739,
+      "sha256": "bcabd1269d9340f3bf14f90767c63d4783dac115e1e0bf90270808c4d97b5e44"
+    },
+    {
+      "path": "06_基座_RAG-企业知识库-实战版/data/stock_data/answers_qwen_turbo.json",
+      "size": 6884,
+      "sha256": "21997006331db65f585fdd83519769927ff62c66efc091864b62c68d37fa1f3f"
+    },
+    {
+      "path": "06_基座_RAG-企业知识库-实战版/data/stock_data/answers_qwen_turbo_20.json",
+      "size": 8613,
+      "sha256": "e3a35bf458f3091df6823da4a704cf4139cbe601c7ce2b489758e05325dade3a"
+    },
+    {
+      "path": "06_基座_RAG-企业知识库-实战版/data/stock_data/answers_qwen_turbo_20_debug.json",
+      "size": 10534,
+      "sha256": "2821ec481634a9c7022ef3775f6c6bf26efe12c5202cab44661428ec08efbbab"
+    },
+    {
+      "path": "06_基座_RAG-企业知识库-实战版/data/stock_data/answers_qwen_turbo_debug.json",
+      "size": 17831,
+      "sha256": "3a88efdbe63c228cec48012a581c7599529bb0e2bbec00d119d4d2bf591e0f93"
+    },
+    {
+      "path": "06_基座_RAG-企业知识库-实战版/data/stock_data/databases/chunked_reports/【财报】中芯国际：中芯国际2024年年度报告.json",
+      "size": 747358,
+      "sha256": "712cd85badf08243d8d1367c895f1b08a393d67b6771b982380ead611cc430dc"
+    },
+    {
+      "path": "06_基座_RAG-企业知识库-实战版/data/stock_data/databases/vector_dbs/62f598e696ecd044a63dae29cfad00a3.faiss",
+      "size": 1579053,
+      "sha256": "beda5560289019b71c31398c54ec52176e90b1442518b5065b41fe81ef3f184b"
+    },
+    {
+      "path": "06_基座_RAG-企业知识库-实战版/data/stock_data/databases/vector_dbs/stock_10001.faiss",
+      "size": 1579053,
+      "sha256": "beda5560289019b71c31398c54ec52176e90b1442518b5065b41fe81ef3f184b"
+    },
+    {
+      "path": "06_基座_RAG-企业知识库-实战版/data/stock_data/debug_data/03_reports_markdown/【财报】中芯国际：中芯国际2024年年度报告.md",
+      "size": 603010,
+      "sha256": "2fdddadc282b987f3cc84cf59bfd50e83f61790f51fad922f0b7cdefe0a5b17d"
+    },
+    {
+      "path": "06_基座_RAG-企业知识库-实战版/data/stock_data/pdf_reports.xlsx",
+      "size": 9215,
+      "sha256": "89efc07afdbb773d6277c695bf5bf946c076bcfcd1b52a66d747aee3dd42e1e5"
+    },
+    {
+      "path": "06_基座_RAG-企业知识库-实战版/data/stock_data/pdf_reports/【上海证券】中芯国际深度研究报告：晶圆制造龙头，领航国产芯片新征程.pdf",
+      "size": 2201991,
+      "sha256": "1a86effe2c723529738c4e2a9a1bbf61c9479ad742cbe2bd623ac6e74e9e4e24"
+    },
+    {
+      "path": "06_基座_RAG-企业知识库-实战版/data/stock_data/pdf_reports/【东方证券】产能利用率提升，持续推进工艺迭代和产品性能升级.pdf",
+      "size": 676704,
+      "sha256": "89339930311f929c22bc5d85da6d7b1694a0bfbbc29257bace106363f3e75706"
+    },
+    {
+      "path": "06_基座_RAG-企业知识库-实战版/data/stock_data/pdf_reports/【中原证券】产能利用率显著提升，持续推进工艺迭代升级——中芯国际(688981)季报点评.pdf",
+      "size": 362300,
+      "sha256": "01f6f583308c331092886504dfec2c32e6f0c83ca5308d16b121971a52b29305"
+    },
+    {
+      "path": "06_基座_RAG-企业知识库-实战版/data/stock_data/pdf_reports/【光大证券】中芯国际2025年一季度业绩点评：1Q突发生产问题，2Q业绩有望筑底，自主可控趋势不改.pdf",
+      "size": 733242,
+      "sha256": "7ce307cd2fa5ac679c3a171c35a91ed2cae49deb4e153ca03290de9f8b1c83fb"
+    },
+    {
+      "path": "06_基座_RAG-企业知识库-实战版/data/stock_data/pdf_reports/【兴证国际】季度盈利低于预期，看好国产芯片长期空间.pdf",
+      "size": 413045,
+      "sha256": "1a7947bc658b8ac68d068432862617b4ccceb2d4b9655a55529eab5c889efefb"
+    },
+    {
+      "path": "06_基座_RAG-企业知识库-实战版/data/stock_data/pdf_reports/【华泰证券】中芯国际（688981）：上调港股目标价到63港币，看好DeepSeek推动代工需求强劲增长.pdf",
+      "size": 1523833,
+      "sha256": "07cf6e6f2d8419afbe141121a2080ae5889ed75c2eb55058e03473e561ff6edd"
+    },
+    {
+      "path": "06_基座_RAG-企业知识库-实战版/data/stock_data/pdf_reports/【国信证券】工业与汽车触底反弹，良率影响短期营收.pdf",
+      "size": 743201,
+      "sha256": "40dede2d4ca0024e62f550c5a29a9f7b951be75cdee6f3c7c53c10bb78cbf53c"
+    },
+    {
+      "path": "06_基座_RAG-企业知识库-实战版/data/stock_data/pdf_reports/【财报】中芯国际：中芯国际2024年年度报告.pdf",
+      "size": 3678523,
+      "sha256": "d0d08d761acb9c16f88343e313a893be17469d21e96042556378631d069924d1"
+    },
+    {
+      "path": "06_基座_RAG-企业知识库-实战版/data/stock_data/pdf_reports/中芯国际机构调研纪要.pdf",
+      "size": 3287778,
+      "sha256": "d022d0a840aac048674597d7db4d4ebf2d0f7753ef836030a74c0fc525ef91b3"
+    },
+    {
+      "path": "06_基座_RAG-企业知识库-实战版/data/stock_data/questions-1.json",
+      "size": 738,
+      "sha256": "e154f39a702187b8093a41c6111a276a122b2ae97786542326ff8976d6e1eed3"
+    },
+    {
+      "path": "06_基座_RAG-企业知识库-实战版/data/stock_data/questions.json",
+      "size": 697,
+      "sha256": "dc85df95859b4a143b40755c962ef5b7619c6f3b061b53762973f82f962e1193"
+    },
+    {
+      "path": "06_基座_RAG-企业知识库-实战版/data/stock_data/subset.csv",
+      "size": 92,
+      "sha256": "c8d4b28cb16126c91a00494028c81471683f4a06451b65449c4cd036bbf8b219"
+    },
+    {
+      "path": "06_基座_RAG-企业知识库-实战版/docs/src_modules_overview.md",
+      "size": 3340,
+      "sha256": "10392c69afef50e8eaaff3a6e2d69e9e4866861e162268244a8fab355bb41305"
+    },
+    {
+      "path": "06_基座_RAG-企业知识库-实战版/env",
+      "size": 270,
+      "sha256": "d2d16d5a65af9265db37d852627d287a3dfcaee0a81cb5be115179abd883810f"
+    },
+    {
+      "path": "06_基座_RAG-企业知识库-实战版/requirements.txt",
+      "size": 499,
+      "sha256": "c6684558f58073e2ac343cde532241b2511d64910bcea4033f60782fe24fa355"
+    },
+    {
+      "path": "06_基座_RAG-企业知识库-实战版/setup.py",
+      "size": 100,
+      "sha256": "1676e27bba37570a6ad738856cf7b6451c5d8debc465f5a15496ac49953cbd05"
+    },
+    {
+      "path": "06_基座_RAG-企业知识库-实战版/src/__init__.py",
+      "size": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "06_基座_RAG-企业知识库-实战版/src/api_request_parallel_processor.py",
+      "size": 16530,
+      "sha256": "2bba28437000bec886d5f738ce37e67c4687d4fa1c63ce0ca31c7963792880eb"
+    },
+    {
+      "path": "06_基座_RAG-企业知识库-实战版/src/api_requests.py",
+      "size": 31309,
+      "sha256": "fb1a697cc3e3c91efd5d9dfb7ee547c3ff9e9a383d0b39cf46dfe5d1a28287cd"
+    },
+    {
+      "path": "06_基座_RAG-企业知识库-实战版/src/dummy_report.pdf",
+      "size": 268963,
+      "sha256": "dedb9846a4bf5e11f2dd9881890b7f1a02e6ff94512ca6cd401e1ddeed5e6232"
+    },
+    {
+      "path": "06_基座_RAG-企业知识库-实战版/src/ingestion.py",
+      "size": 7350,
+      "sha256": "486d4366ab1d3e304a67e8c4ddd402c6a8c0423f4bc2fe8727779a7a2ecb4d47"
+    },
+    {
+      "path": "06_基座_RAG-企业知识库-实战版/src/parsed_reports_merging.py",
+      "size": 15997,
+      "sha256": "033c1ec5cc4c3f29d8cf988b786fb9038333239690d3e576f568221451352046"
+    },
+    {
+      "path": "06_基座_RAG-企业知识库-实战版/src/pdf_mineru.py",
+      "size": 3464,
+      "sha256": "112aab0f1c47dce766c2e30574e79e4ccbb41a7aac04a82db0dfbbd2e391519a"
+    },
+    {
+      "path": "06_基座_RAG-企业知识库-实战版/src/pdf_parsing.py",
+      "size": 22062,
+      "sha256": "35997b5c6fa0a9a181c9e7028bcbdb3f3a92d869a6beda93d405c6f7484f3d30"
+    },
+    {
+      "path": "06_基座_RAG-企业知识库-实战版/src/pipeline.py",
+      "size": 15288,
+      "sha256": "00aad07f0125cbd778c624f8b388c52c945d47deedbd05275b0ff9328ab342de"
+    },
+    {
+      "path": "06_基座_RAG-企业知识库-实战版/src/prompts.py",
+      "size": 19581,
+      "sha256": "2c57587d10021a9b612f9bea31ed9f6ef1c5a4a52e66dcfbf94d41e1276285ab"
+    },
+    {
+      "path": "06_基座_RAG-企业知识库-实战版/src/questions_processing.py",
+      "size": 25975,
+      "sha256": "8eee5ed01a61449c05f7bcf315596cc7272f993b188778da1d0bf70785662fd4"
+    },
+    {
+      "path": "06_基座_RAG-企业知识库-实战版/src/reranking.py",
+      "size": 10453,
+      "sha256": "44fc5cf2b335e696161db0090d76ffe96edbd35478ac0b8d9ea1928abe54dff2"
+    },
+    {
+      "path": "06_基座_RAG-企业知识库-实战版/src/retrieval.py",
+      "size": 14277,
+      "sha256": "5392a4a88da5593d706eb4594b102771e5049de0687c87e35d53080731271243"
+    },
+    {
+      "path": "06_基座_RAG-企业知识库-实战版/src/tables_serialization.py",
+      "size": 14715,
+      "sha256": "5db9819af19642dce7eab44c34da639b3b722e1176805a88dbc272b6d9810259"
+    },
+    {
+      "path": "06_基座_RAG-企业知识库-实战版/src/text_splitter.py",
+      "size": 9436,
+      "sha256": "2686733c20b5d6402e947d2f69387912c49ce8c15d97a7b0dfafb15230ff7c19"
+    },
+    {
+      "path": "06_基座_RAG-企业知识库-实战版/小示例/dashscope-embedding-1.py",
+      "size": 710,
+      "sha256": "106a62447cefd5262d402568b6969cd4ab93be38993e993dc8e96e7178d39915"
+    },
+    {
+      "path": "06_基座_RAG-企业知识库-实战版/小示例/情感分析-Qwen.py",
+      "size": 768,
+      "sha256": "7336ecb0165fcabfdcc0dafb9b3c1d05ebd2dbbe78b1b911ec14b6996d1b4098"
+    },
+    {
+      "path": "07_可吸收_CASE1-知识库处理场景/1-知识库问题生成与检索优化-BM25.ipynb",
+      "size": 26912,
+      "sha256": "08c7df001ae8740f8e71903399bdbce1578f65299886336370112dbcdf133a8e"
+    },
+    {
+      "path": "07_可吸收_CASE1-知识库处理场景/2-对话知识沉淀.ipynb",
+      "size": 16809,
+      "sha256": "6203322cb0e95012975062a45a118cf3e483463f310fdc124913bc052c57534b"
+    },
+    {
+      "path": "07_可吸收_CASE1-知识库处理场景/3-知识库健康度检查.ipynb",
+      "size": 20821,
+      "sha256": "b6b83e155c80a53e6caf48f21a22bbe26c46dba9527604cb96c9b2b5416cbbb8"
+    },
+    {
+      "path": "07_可吸收_CASE1-知识库处理场景/4-知识库版本管理与性能比较.ipynb",
+      "size": 26808,
+      "sha256": "cd32fbde00bc1b3941d135b776c2bef14c768e1f31fffaeb12d1cff76f5a4090"
+    },
+    {
+      "path": "07_可吸收_CASE1-知识库处理场景/requirements.txt",
+      "size": 115,
+      "sha256": "57b234c9993c9055530fa01f68aea782a65996b5c46998b22b6de18269378d57"
+    },
+    {
+      "path": "08_可吸收_ragas-demo/demo_1.py",
+      "size": 6140,
+      "sha256": "33cdab1759792b072e89e70e8624f31a5abdf49711ce14befe3030906adf1de4"
+    },
+    {
+      "path": "08_可吸收_ragas-demo/demo_1_修改说明.md",
+      "size": 5301,
+      "sha256": "4f9871e996ffa26ae180806dc6e772c54d3279329ba523ac65017f1eb6ca6818"
+    },
+    {
+      "path": "08_可吸收_ragas-demo/demo_2.py",
+      "size": 2994,
+      "sha256": "a9582013fd599f7bf98f6dd9eb28f210e4ba86fc53d17cc1c120d60c0d6069ab"
+    },
+    {
+      "path": "08_可吸收_ragas-demo/demo_2_修改说明.md",
+      "size": 4745,
+      "sha256": "9657c4e77434b8be594d4edfc8e0430b7d0239e7c20ab4ca31d74dbe3b942de3"
+    },
+    {
+      "path": "08_可吸收_ragas-demo/浦发上海浦东发展银行西安分行个金客户经理考核办法.pdf",
+      "size": 331035,
+      "sha256": "e5067a42170c3a70c0fb368aec31b5ecff7d0d11715ffac22790b7690f6adf2c"
+    },
+    {
+      "path": "09_可吸收_CASE-切片策略/1-固定长度切片.ipynb",
+      "size": 4392,
+      "sha256": "b6bb67027f6b5f133c41a41dc6d695e298f9d83039743da368baa0dee7408fbc"
+    },
+    {
+      "path": "09_可吸收_CASE-切片策略/2-句子边界切片.ipynb",
+      "size": 4487,
+      "sha256": "c31a9a82dd1db634c15bc4fed51006459335eb42a7f7a67717061f52385c98af"
+    },
+    {
+      "path": "09_可吸收_CASE-切片策略/3-LLM语义切片.ipynb",
+      "size": 7043,
+      "sha256": "f755dfc54997c67077764efc2ec33870ed1a158f678d4478cf6082caae0d33dd"
+    },
+    {
+      "path": "09_可吸收_CASE-切片策略/4-层次切片.ipynb",
+      "size": 7248,
+      "sha256": "4a80a81617bf682af29c563231e2a60e5f4be6000698dfe4a8fe5a9d8528f010"
+    },
+    {
+      "path": "09_可吸收_CASE-切片策略/5-滑动窗口切片.ipynb",
+      "size": 4010,
+      "sha256": "66a81d98598f3f531111830856235005ec5679f27e18023fed2ecfa09d677b59"
+    },
+    {
+      "path": "09_可吸收_CASE-切片策略/6-自适应切片.ipynb",
+      "size": 4516,
+      "sha256": "f7d3adf81ac4375268611b617fb0b04d4b0bfa52e7e8f7e1e11ad9356556e63c"
+    },
+    {
+      "path": "09_可吸收_CASE-切片策略/requirements.txt",
+      "size": 16,
+      "sha256": "074d0364e5fad5eab90ab2688582d50e95a29ee93f61da323f0fe40d9793dd75"
+    },
+    {
+      "path": "09_可吸收_CASE-切片策略/切片策略对比测试.ipynb",
+      "size": 12921,
+      "sha256": "598f06004eeddbdb2b36522d381eb83622e5bd1eb1dffdac87755d8e17929f30"
+    },
+    {
+      "path": "10_可吸收_CASE-ChatPDF-Faiss/chatpdf-faiss.ipynb",
+      "size": 23012,
+      "sha256": "458225c16d34c1ff8835a4bd57174bbfe90ab28cfa47ab3c72817f0ed3ef501e"
+    },
+    {
+      "path": "10_可吸收_CASE-ChatPDF-Faiss/chatpdf-faiss.py",
+      "size": 7549,
+      "sha256": "32d8e7eadceba8f2cb77cda2240e06ae857af6f51dcb5e81076cfda05ab15b3c"
+    },
+    {
+      "path": "10_可吸收_CASE-ChatPDF-Faiss/requirements.txt",
+      "size": 76,
+      "sha256": "5db1b8002532ae0279ba49873725d0cf3a376aecf5def1246ff78fdfdb940b57"
+    },
+    {
+      "path": "10_可吸收_CASE-ChatPDF-Faiss/vector_db/index.faiss",
+      "size": 30765,
+      "sha256": "ffa5797ffb1f526bc375aff24f3ff296b5d5dd510ef6f7b1e57b6f642a0b510d"
+    },
+    {
+      "path": "10_可吸收_CASE-ChatPDF-Faiss/vector_db/index.pkl",
+      "size": 12567,
+      "sha256": "31ea5425abefb57f069532b7bee8c3fd4f735877045db6e196c6430cec859800"
+    },
+    {
+      "path": "10_可吸收_CASE-ChatPDF-Faiss/vector_db/page_info.pkl",
+      "size": 11893,
+      "sha256": "944a716b848612a5d2d229ca3e0f5c89b9b18fefa18ef3a1def2241342b63f71"
+    },
+    {
+      "path": "10_可吸收_CASE-ChatPDF-Faiss/浦发上海浦东发展银行西安分行个金客户经理考核办法.pdf",
+      "size": 331035,
+      "sha256": "e5067a42170c3a70c0fb368aec31b5ecff7d0d11715ffac22790b7690f6adf2c"
+    }
+  ]
+}

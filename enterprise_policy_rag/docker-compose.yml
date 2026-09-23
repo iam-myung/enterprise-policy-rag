@@ -1,0 +1,33 @@
+# Docker Compose 本地演示（SPEC §13.1）
+# api 与 ui 使用同一镜像与同一只读源码；SQLite 与 workspace 通过 volume 持久化。
+services:
+  api:
+    build: .
+    command: uv run uvicorn enterprise_policy_rag.interfaces.api.app:app --host 0.0.0.0 --port 8000
+    ports:
+      - "8000:8000"
+    environment:
+      APP_ENV: demo
+      APP_HOST: 0.0.0.0
+      APP_PORT: "8000"
+      DATABASE_URL: sqlite:///workspace/database/enterprise_policy_rag.db
+      WORKSPACE_ROOT: workspace
+      DASHSCOPE_API_KEY: ${DASHSCOPE_API_KEY:-}
+      LOG_LEVEL: INFO
+    volumes:
+      - workspace:/app/workspace
+
+  ui:
+    build: .
+    command: uv run streamlit run enterprise_policy_rag/interfaces/ui/app.py --server.port 8501 --server.address 0.0.0.0
+    ports:
+      - "8501:8501"
+    depends_on:
+      - api
+    environment:
+      API_BASE_URL: http://api:8000
+    volumes:
+      - workspace:/app/workspace
+
+volumes:
+  workspace:
