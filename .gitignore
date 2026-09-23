@@ -35,6 +35,10 @@ htmlcov/
 Thumbs.db
 *.log
 
+# ----- 本地 AI / 过程文档（不上公开仓库）-----
+.cursor/
+.docs/
+
 # ----- 空壳遗留（仅忽略仓库根；勿写成无前缀，否则会误伤 src/enterprise_policy_rag/）-----
 /enterprise_policy_rag/
 

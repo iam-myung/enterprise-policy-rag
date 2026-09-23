@@ -118,6 +118,5 @@ python tools/legacy_guard.py gen         # 重新生成基线
 
 ## 文档
 
-- 唯一事实来源：`.docs/SPEC.md`
-- 开发契约：`.docs/SPEC.md` §11
+- 产品/技术设计文档在本地 `.docs/`（不纳入本公开仓库）
 - 许可证：[MIT License](LICENSE)
