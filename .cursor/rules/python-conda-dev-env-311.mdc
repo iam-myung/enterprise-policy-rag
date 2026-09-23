@@ -1,0 +1,18 @@
+---
+description: Keeps Python commands on one project-approved interpreter and prevents silent environment drift
+globs: "**/*.py,**/*.ipynb,pyproject.toml,requirements*.txt,environment*.yml,environment*.yaml"
+alwaysApply: false
+---
+
+# Python Runtime Consistency
+
+All installs, tests, SMOKE, servers, and Agent shell commands in one project must use the same interpreter selected by `.docs/SPEC.md` and the repository's environment files.
+
+- Selection priority: explicit `.docs/SPEC.md` interpreter/environment → repository lock/config (`environment.yml`, `.python-version`, `pyproject.toml`, tool config) → currently active interpreter after verification.
+- If the project explicitly selects Conda environment `dev_env_311`, resolve its current absolute interpreter path from Conda; never assume a user-specific drive or installation directory.
+- Run packages through the selected interpreter: `<absolute-python> -m pip ...`; do not mix `pip`, `python`, `py`, Conda base, a system interpreter, `uv`, or another virtual environment in the same evidence chain.
+- Prefer an absolute interpreter path for automation. Interactive activation is acceptable only after verifying the resulting interpreter; use `conda run` only when its exit-code, stdout, and encoding behavior are reliable in the current shell.
+- Before the first install/test/SMOKE command, record `<absolute-python> -c "import sys; print(sys.executable); print(sys.version)"`.
+- If the required environment cannot be resolved or conflicts with `.docs/SPEC.md`, stop with BLOCK and report the mismatch; do not create or replace an environment without explicit approval.
+
+Before evidence-producing commands, print `sys.executable` and `sys.version`. Do not use project `.venv`, uv Python, base/system Python, or a different interpreter unless the user explicitly overrides.

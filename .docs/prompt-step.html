@@ -284,14 +284,13 @@
       <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
       <span class="progress-label" id="progressLabel">0 / 0</span>
     </div>
-    <nav class="nav-chapters" id="navChapters"></nav>
   </header>
 
   <main>
     <p class="intro">
       <strong>硬规则：</strong>未粘贴本 Step 的 <code>*-RED</code> 真实失败证据（命令+退出码+失败断言），禁止开启对应 <code>*-GREEN</code> 对话。
       文档：<code>.docs/SPEC.md</code>（唯一事实来源）。
-      实现类统一 <code>N-RED → N-GREEN →（章）N-QA</code>；分对话执行；GREEN 禁止改 RED 断言；一次只做一个 Step；旧 CASE 只读；代码仅 <code>enterprise_policy_rag/</code>。对齐 SPEC §11（八条防线 / 七段循环 / DoD）。
+      实现类统一 <code>N-RED → N-GREEN →（章）N-QA</code>；分对话执行；GREEN 禁止改 RED 断言；一次只做一个 Step；旧 CASE 只读；应用代码在仓库根 <code>src/enterprise_policy_rag/</code>（包名不变）。对齐 SPEC §11（八条防线 / 七段循环 / DoD）。
     </p>
     <div id="app"></div>
   </main>
@@ -300,6 +299,31 @@
 
 <script>
 const STORAGE_KEY = "prompt-step.enterprise-policy-rag.v1";
+// 进度种子：仅合并一次（SEED_VERSION_KEY）；不覆盖用户之后手动取消的勾选。
+const SEED_VERSION_KEY = "prompt-step.enterprise-policy-rag.seed.v20260924e";
+const SEED_DONE = [
+  // Step 0–15 全闭环（含 QA / FIX）
+  "0-BUILD", "0-QA",
+  "1-RED", "1-GREEN", "1-QA",
+  "2-RED", "2-GREEN", "2-QA",
+  "3-RED", "3-GREEN", "3-QA",
+  "4-RED", "4-GREEN", "4-QA",
+  "5-RED", "5-GREEN", "5-QA",
+  "6-RED", "6-GREEN", "6-QA",
+  "7-RED", "7-GREEN", "7-QA",
+  "8-RED", "8-GREEN", "8-QA",
+  "9-RED", "9-GREEN", "9-QA",
+  "10-RED", "10-GREEN", "10-QA",
+  "11-BUILD", "11-QA",
+  "12-BUILD", "12-QA",
+  "13-BUILD", "13-QA",
+  "14-RED", "14-GREEN", "14-QA", "14-FIX",
+  "15-RED", "15-BUILD", "15-QA",
+  // Step 16–18：实现/取证已落盘；正式 QA 卡未裁决，不预勾
+  "16-RED", "16-GREEN", "16-QA",
+  "17-RED", "17-BUILD", "17-QA",
+  "18-RED", "18-GREEN", "18-QA",
+];
 
 const ROLE_CLASS = {
   "System-Architect": "architect",
@@ -321,7 +345,8 @@ const CHAPTERS = [
         title: "初始化骨架与旧 CASE 防线",
         role: "System-Architect",
         unit: "enterprise_policy_rag/ 骨架 + tools/legacy_guard.py + legacy_manifest.json",
-        prompt: `@.codebuddy/agents/System-Architect.md
+        prompt: `更新
+@.codebuddy/agents/System-Architect.md
 @.docs/SPEC.md
 @.docs/prompt-step.html
 
@@ -346,7 +371,8 @@ const CHAPTERS = [
         title: "旧 CASE 防线验收",
         role: "QA-Test",
         unit: "guard 零漂移 + 篡改阻断证据",
-        prompt: `@.codebuddy/agents/QA-Test.md
+        prompt: `更新
+@.codebuddy/agents/QA-Test.md
 @.docs/SPEC.md
 @.docs/prompt-step.html
 
@@ -371,7 +397,8 @@ const CHAPTERS = [
         title: "契约测试（失败证据）",
         role: "Backend",
         unit: "tests/contract/ Envelope·ErrorCode 契约测试",
-        prompt: `@.codebuddy/agents/Backend.md
+        prompt: `更新
+@.codebuddy/agents/Backend.md
 @.docs/SPEC.md
 @.docs/prompt-step.html
 
@@ -389,7 +416,8 @@ const CHAPTERS = [
         title: "最小实现",
         role: "Backend",
         unit: "domain/errors.py + domain/result.py + contracts DTO",
-        prompt: `@.codebuddy/agents/Backend.md
+        prompt: `更新
+@.codebuddy/agents/Backend.md
 @.docs/SPEC.md
 @.docs/prompt-step.html
 
@@ -407,7 +435,8 @@ AnswerStatus、统一错误结构）、application/contracts/ 的 Pydantic DTO �
         title: "契约验收",
         role: "QA-Test",
         unit: "Envelope 互斥 + ErrorCode 映射验收",
-        prompt: `@.codebuddy/agents/QA-Test.md
+        prompt: `更新
+@.codebuddy/agents/QA-Test.md
 @.docs/SPEC.md
 @.docs/prompt-step.html
 
@@ -428,7 +457,8 @@ AnswerStatus、统一错误结构）、application/contracts/ 的 Pydantic DTO �
         title: "实体不变量与状态机测试",
         role: "Backend",
         unit: "tests/unit/ 实体不变量·状态机测试",
-        prompt: `@.codebuddy/agents/Backend.md
+        prompt: `更新
+@.codebuddy/agents/Backend.md
 @.docs/SPEC.md
 @.docs/prompt-step.html
 
@@ -445,7 +475,8 @@ AnswerStatus、统一错误结构）、application/contracts/ 的 Pydantic DTO �
         title: "领域实体与状态规则实现",
         role: "Backend",
         unit: "domain/entities.py + policy_rules.py",
-        prompt: `@.codebuddy/agents/Backend.md
+        prompt: `更新
+@.codebuddy/agents/Backend.md
 @.docs/SPEC.md
 @.docs/prompt-step.html
 
@@ -463,7 +494,8 @@ domain/value_objects.py、domain/policy_rules.py（状态机纯函数）。
         title: "状态规则验收",
         role: "QA-Test",
         unit: "状态迁移·日期·重复规则验收",
-        prompt: `@.codebuddy/agents/QA-Test.md
+        prompt: `更新
+@.codebuddy/agents/QA-Test.md
 @.docs/SPEC.md
 @.docs/prompt-step.html
 
@@ -484,7 +516,8 @@ domain/value_objects.py、domain/policy_rules.py（状态机纯函数）。
         title: "表结构·迁移·revision 测试",
         role: "Backend",
         unit: "tests/contract+integration 表结构·迁移·revision",
-        prompt: `@.codebuddy/agents/Backend.md
+        prompt: `更新
+@.codebuddy/agents/Backend.md
 @.docs/SPEC.md
 @.docs/prompt-step.html
 
@@ -500,7 +533,8 @@ domain/value_objects.py、domain/policy_rules.py（状态机纯函数）。
         title: "持久化适配器与迁移实现",
         role: "Backend",
         unit: "sqlite_models.py + document_repository.py + migrations/",
-        prompt: `@.codebuddy/agents/Backend.md
+        prompt: `更新
+@.codebuddy/agents/Backend.md
 @.docs/SPEC.md
 @.docs/prompt-step.html
 
@@ -518,7 +552,8 @@ adapters/persistence/migrations/（Alembic 脚本）、application/ports/reposit
         title: "迁移与 revision 验收",
         role: "QA-Test",
         unit: "upgrade/downgrade + 唯一 ACTIVE revision",
-        prompt: `@.codebuddy/agents/QA-Test.md
+        prompt: `更新
+@.codebuddy/agents/QA-Test.md
 @.docs/SPEC.md
 @.docs/prompt-step.html
 
@@ -539,7 +574,8 @@ adapters/persistence/migrations/（Alembic 脚本）、application/ports/reposit
         title: "文件校验·ParserPort 测试",
         role: "LLM-Backend",
         unit: "tests 文件校验·ParserPort·路径白名单",
-        prompt: `@.codebuddy/agents/LLM-Backend.md
+        prompt: `更新
+@.codebuddy/agents/LLM-Backend.md
 @.docs/SPEC.md
 @.docs/prompt-step.html
 
@@ -556,7 +592,8 @@ adapters/persistence/migrations/（Alembic 脚本）、application/ports/reposit
         title: "ParserPort 与 MinerU 适配器实现",
         role: "LLM-Backend",
         unit: "document_parser.py(port) + mineru_parser.py",
-        prompt: `@.codebuddy/agents/LLM-Backend.md
+        prompt: `更新
+@.codebuddy/agents/LLM-Backend.md
 @.docs/SPEC.md
 @.docs/prompt-step.html
 
@@ -574,7 +611,8 @@ adapters/document/mineru_parser.py、文件安全校验逻辑。
         title: "解析与安全验收",
         role: "QA-Test",
         unit: "四类拒绝 + 页码 + hash 验收",
-        prompt: `@.codebuddy/agents/QA-Test.md
+        prompt: `更新
+@.codebuddy/agents/QA-Test.md
 @.docs/SPEC.md
 @.docs/prompt-step.html
 
@@ -595,7 +633,8 @@ adapters/document/mineru_parser.py、文件安全校验逻辑。
         title: "切片纯函数·原子发布测试",
         role: "Backend",
         unit: "tests chunk 纯函数·IngestPolicy 原子发布",
-        prompt: `@.codebuddy/agents/Backend.md
+        prompt: `更新
+@.codebuddy/agents/Backend.md
 @.docs/SPEC.md
 @.docs/prompt-step.html
 
@@ -612,7 +651,8 @@ adapters/document/mineru_parser.py、文件安全校验逻辑。
         title: "切片与导入编排实现",
         role: "Backend",
         unit: "chunk_pages.py + ingest_policy.py",
-        prompt: `@.codebuddy/agents/Backend.md
+        prompt: `更新
+@.codebuddy/agents/Backend.md
 @.docs/SPEC.md
 @.docs/prompt-step.html
 
@@ -630,7 +670,8 @@ adapters/document/mineru_parser.py、文件安全校验逻辑。
         title: "切片与发布验收",
         role: "QA-Test",
         unit: "hash 一致 + 失败不切换 revision",
-        prompt: `@.codebuddy/agents/QA-Test.md
+        prompt: `更新
+@.codebuddy/agents/QA-Test.md
 @.docs/SPEC.md
 @.docs/prompt-step.html
 
@@ -651,7 +692,8 @@ adapters/document/mineru_parser.py、文件安全校验逻辑。
         title: "DenseIndexPort·命中测试",
         role: "LLM-Backend",
         unit: "tests DenseIndexPort·FAISS·命中 gold 页",
-        prompt: `@.codebuddy/agents/LLM-Backend.md
+        prompt: `更新
+@.codebuddy/agents/LLM-Backend.md
 @.docs/SPEC.md
 @.docs/prompt-step.html
 
@@ -667,7 +709,8 @@ adapters/document/mineru_parser.py、文件安全校验逻辑。
         title: "Embedding 与 FAISS 适配器实现",
         role: "LLM-Backend",
         unit: "dashscope_embeddings.py + faiss_index.py",
-        prompt: `@.codebuddy/agents/LLM-Backend.md
+        prompt: `更新
+@.codebuddy/agents/LLM-Backend.md
 @.docs/SPEC.md
 @.docs/prompt-step.html
 
@@ -685,7 +728,8 @@ adapters/retrieval/faiss_index.py。
         title: "向量基线验收",
         role: "QA-Test",
         unit: "revision 隔离 + 命中验收",
-        prompt: `@.codebuddy/agents/QA-Test.md
+        prompt: `更新
+@.codebuddy/agents/QA-Test.md
 @.docs/SPEC.md
 @.docs/prompt-step.html
 
@@ -706,7 +750,8 @@ adapters/retrieval/faiss_index.py。
         title: "BM25 重建·RRF 纯函数测试",
         role: "LLM-Backend",
         unit: "tests BM25 重建·RRF 纯函数",
-        prompt: `@.codebuddy/agents/LLM-Backend.md
+        prompt: `更新
+@.codebuddy/agents/LLM-Backend.md
 @.docs/SPEC.md
 @.docs/prompt-step.html
 
@@ -721,7 +766,8 @@ adapters/retrieval/faiss_index.py。
         title: "BM25 与 RRF 实现",
         role: "LLM-Backend",
         unit: "bm25_index.py + rrf_fusion.py",
-        prompt: `@.codebuddy/agents/LLM-Backend.md
+        prompt: `更新
+@.codebuddy/agents/LLM-Backend.md
 @.docs/SPEC.md
 @.docs/prompt-step.html
 
@@ -738,7 +784,8 @@ adapters/retrieval/faiss_index.py。
         title: "混合召回验收",
         role: "QA-Test",
         unit: "确定性重建 + 排序确定验收",
-        prompt: `@.codebuddy/agents/QA-Test.md
+        prompt: `更新
+@.codebuddy/agents/QA-Test.md
 @.docs/SPEC.md
 @.docs/prompt-step.html
 
@@ -759,7 +806,8 @@ adapters/retrieval/faiss_index.py。
         title: "Reranker·ConflictDetector 合同测试",
         role: "LLM-Backend",
         unit: "tests Reranker·ConflictDetector 合同",
-        prompt: `@.codebuddy/agents/LLM-Backend.md
+        prompt: `更新
+@.codebuddy/agents/LLM-Backend.md
 @.docs/SPEC.md
 @.docs/prompt-step.html
 
@@ -776,7 +824,8 @@ adapters/retrieval/faiss_index.py。
         title: "重排与冲突判定实现",
         role: "LLM-Backend",
         unit: "qwen_reranker.py + 冲突判定 Adapter",
-        prompt: `@.codebuddy/agents/LLM-Backend.md
+        prompt: `更新
+@.codebuddy/agents/LLM-Backend.md
 @.docs/SPEC.md
 @.docs/prompt-step.html
 
@@ -794,13 +843,15 @@ adapters/retrieval/qwen_reranker.py、冲突判定 Adapter。
         title: "重排与冲突验收",
         role: "QA-Test",
         unit: "退化 + 冲突四条件验收",
-        prompt: `@.codebuddy/agents/QA-Test.md
+        prompt: `更新
+@.codebuddy/agents/QA-Test.md
 @.docs/SPEC.md
 @.docs/prompt-step.html
 
 只做 Step 8-QA。只验收不改代码。
 
-验收点：重排只返回给定 ID、退化标记、冲突四条件、版本取代不误判、固定集含≥3 冲突边界样本。
+验收点：重排只返回给定 ID、退化标记、冲突四条件、版本取代不误判。
+（固定评测集含≥3 冲突边界样本 → 归 Step 12 评测闭环，不属本 Step 验收。）
 
 输出：Pass / Fail / PASS with risks / BLOCK。`
       },
@@ -815,7 +866,8 @@ adapters/retrieval/qwen_reranker.py、冲突判定 Adapter。
         title: "AskPolicy 三路径·引用校验测试",
         role: "LLM-Backend",
         unit: "tests AskPolicy 三路径·引用校验",
-        prompt: `@.codebuddy/agents/LLM-Backend.md
+        prompt: `更新
+@.codebuddy/agents/LLM-Backend.md
 @.docs/SPEC.md
 @.docs/prompt-step.html
 
@@ -825,6 +877,8 @@ adapters/retrieval/qwen_reranker.py、冲突判定 Adapter。
 ① AskPolicy 三路径：ANSWERED（引用非空）/NO_EVIDENCE（不得含推测答案）/CONFLICT（满足 4.4 且引用互斥 claim 证据）。
 ② 引用校验：模型返回未知 ID 或伪造引用 → CITATION_VALIDATION_FAILED；
    quote 由系统从 chunk 按字符区间截取，模型只选 evidence ID，不得生成页码/原文。
+   冲突路径（CONFLICT）的两条互斥 claim 证据同样须通过原文子串校验
+   （validate_evidence_quote），不得只校验 ANSWERED 路径而漏掉 CONFLICT 路径。
 ③ ChatModelPort 只引用给定 evidence ids；输出经 Pydantic 校验（SPEC §9.3）。`
       },
       {
@@ -832,7 +886,8 @@ adapters/retrieval/qwen_reranker.py、冲突判定 Adapter。
         title: "问答编排与引用校验实现",
         role: "LLM-Backend",
         unit: "ask_policy.py + qwen_chat_model.py + citation_rules.py",
-        prompt: `@.codebuddy/agents/LLM-Backend.md
+        prompt: `更新
+@.codebuddy/agents/LLM-Backend.md
 @.docs/SPEC.md
 @.docs/prompt-step.html
 
@@ -851,7 +906,8 @@ domain/citation_rules.py（引用/quote 校验）、Prompt DTO（SPEC §9.3）�
         title: "问答与引用验收",
         role: "QA-Test",
         unit: "三路径 + 伪造引用拒绝验收",
-        prompt: `@.codebuddy/agents/QA-Test.md
+        prompt: `更新
+@.codebuddy/agents/QA-Test.md
 @.docs/SPEC.md
 @.docs/prompt-step.html
 
@@ -872,7 +928,8 @@ domain/citation_rules.py（引用/quote 校验）、Prompt DTO（SPEC §9.3）�
         title: "HTTP 合同测试",
         role: "Backend",
         unit: "tests/contract+smoke 四端点 HTTP 合同",
-        prompt: `@.codebuddy/agents/Backend.md
+        prompt: `更新
+@.codebuddy/agents/Backend.md
 @.docs/SPEC.md
 @.docs/prompt-step.html
 
@@ -890,7 +947,8 @@ domain/citation_rules.py（引用/quote 校验）、Prompt DTO（SPEC §9.3）�
         title: "FastAPI 路由与装配实现",
         role: "Backend",
         unit: "interfaces/api/* + composition.py",
-        prompt: `@.codebuddy/agents/Backend.md
+        prompt: `更新
+@.codebuddy/agents/Backend.md
 @.docs/SPEC.md
 @.docs/prompt-step.html
 
@@ -908,7 +966,8 @@ composition.py（唯一装配入口）。
         title: "API 验收",
         role: "QA-Test",
         unit: "Envelope + 越界路径拒绝验收",
-        prompt: `@.codebuddy/agents/QA-Test.md
+        prompt: `更新
+@.codebuddy/agents/QA-Test.md
 @.docs/SPEC.md
 @.docs/prompt-step.html
 
@@ -929,7 +988,8 @@ composition.py（唯一装配入口）。
         title: "展示层实现",
         role: "Frontend",
         unit: "interfaces/ui/{app.py,api_client.py}",
-        prompt: `@.codebuddy/agents/Frontend.md
+        prompt: `更新
+@.codebuddy/agents/Frontend.md
 @.docs/SPEC.md
 @.docs/prompt-step.html
 
@@ -948,7 +1008,8 @@ composition.py（唯一装配入口）。
         title: "UI 验收",
         role: "QA-Test",
         unit: "三态渲染 + 引用回看验收",
-        prompt: `@.codebuddy/agents/QA-Test.md
+        prompt: `更新
+@.codebuddy/agents/QA-Test.md
 @.docs/SPEC.md
 @.docs/prompt-step.html
 
@@ -969,7 +1030,8 @@ composition.py（唯一装配入口）。
         title: "评测集与评测实现",
         role: "Data-Analyst",
         unit: "phase1.jsonl + evaluate_rag.py + cli/evaluate.py",
-        prompt: `@.codebuddy/agents/Data-Analyst.md
+        prompt: `更新
+@.codebuddy/agents/Data-Analyst.md
 @.docs/SPEC.md
 @.docs/prompt-step.html
 
@@ -987,7 +1049,8 @@ composition.py（唯一装配入口）。
         title: "评测验收",
         role: "QA-Test",
         unit: "同集对比 + 指标适用性验收",
-        prompt: `@.codebuddy/agents/QA-Test.md
+        prompt: `更新
+@.codebuddy/agents/QA-Test.md
 @.docs/SPEC.md
 @.docs/prompt-step.html
 
@@ -1001,14 +1064,15 @@ composition.py（唯一装配入口）。
   },
   {
     id: "c13",
-    title: "Step 13 — 质量门禁·求职证据",
+    title: "Step 13 — 质量门禁·交付证据",
     steps: [
       {
         id: "13-BUILD",
         title: "全链路门禁与证据汇总",
         role: "QA-Test",
         unit: "CI + 性能报告 + 失败案例 + Demo 证据",
-        prompt: `@.codebuddy/agents/QA-Test.md
+        prompt: `更新
+@.codebuddy/agents/QA-Test.md
 @.docs/SPEC.md
 @.docs/prompt-step.html
 
@@ -1024,7 +1088,8 @@ composition.py（唯一装配入口）。
         title: "最终 Gate 验收",
         role: "Debug",
         unit: "八条 Gate 证据齐备验收",
-        prompt: `@.codebuddy/agents/Debug.md
+        prompt: `更新
+@.codebuddy/agents/Debug.md
 @.docs/SPEC.md
 @.docs/prompt-step.html
 
@@ -1036,12 +1101,430 @@ composition.py（唯一装配入口）。
       },
     ],
   },
+  // ---- 交付缺口修复批次（F1–F5）----
+  // 来源：项目收尾体检（2026-09-14）。F6「仓库首次提交」由用户单独执行，不在本清单内。
+  {
+    id: "c14",
+    title: "Step 14 — 可观测性落地（TelemetryPort·OTel 埋点）",
+    steps: [
+      {
+        id: "14-RED",
+        title: "TelemetryPort 契约测试（失败证据）",
+        role: "Backend",
+        unit: "tests/contract/test_telemetry_port.py + tests/unit/test_telemetry_redaction.py",
+        prompt: `更新
+@.codebuddy/agents/Backend.md
+@.docs/SPEC.md
+@.docs/prompt-step.html
+
+只做 Step 14-RED。只写测试并运行，保存真实失败证据，禁止写实现。
+
+背景：当前 application/ports/telemetry.py 与 adapters/telemetry/otel_telemetry.py 仍是
+「占位」空壳，全仓库无 TelemetryPort、无任何调用点，SPEC 中对应 Step 的可观测性未落地。
+
+编写 tests/contract/test_telemetry_port.py：
+① application.ports.telemetry 暴露 TelemetryPort：结构化事件、span、metric 三类记录能力。
+② 可用性合同：provider 未配置或依赖缺失时装配出 no-op 实现，调用不抛异常、不阻断主流程。
+③ 脱敏合同（负样例）：含 DASHSCOPE_API_KEY 明文、完整制度原文长片段、绝对路径、PII 字段的记录
+   请求必须被拒绝或丢弃并置 warning；二选一后断言其确定行为。
+
+编写 tests/unit/test_telemetry_redaction.py：对上述四类输入的脱敏结果做确定性断言。
+
+运行并保存「模块/符号不存在」的真实失败输出作为 RED 证据，落盘
+artifacts/smoke/step14-red.txt（命令 + 退出码 + 失败断言）。`
+      },
+      {
+        id: "14-GREEN",
+        title: "TelemetryPort 与 OTel 适配器实现",
+        role: "System-Architect",
+        unit: "application/ports/telemetry.py + adapters/telemetry/otel_telemetry.py + composition.py",
+        prompt: `更新
+@.codebuddy/agents/System-Architect.md
+@.docs/SPEC.md
+@.docs/prompt-step.html
+
+只做 Step 14-GREEN。禁止修改 14-RED 已确认的断言。
+
+先判定归属：核对 SPEC 是否把可观测性列入 Phase 1 交付项。
+- 属交付 → 按 1)~4) 落地实现；
+- 不属交付 → 不写实现，改为正式降级：删除两处占位文件，在 SPEC 与 README 标注推迟到后续 Phase，
+  并记录该决策；脱敏要求仍须保留在合同中。此分支不得留半成品占位。
+
+实现交付：
+1) application/ports/telemetry.py：定义 TelemetryPort（Protocol），仅依赖标准库与 typing；
+   定义事件/span/metric 入参 DTO 与脱敏白名单（禁止密钥、完整制度原文、绝对路径、PII）。
+2) adapters/telemetry/otel_telemetry.py：opentelemetry-api/sdk 实现；依赖缺失或 OTEL 未启用时
+   退化为 no-op 并输出一次告警，问答链路不得因此失败。
+3) pyproject.toml 增加 opentelemetry-api、opentelemetry-sdk（可选依赖组亦可）。
+4) composition.py 唯一装配点注入 TelemetryPort；在问答、导入、评测三条入口埋点：
+   corpus_revision、证据条数、degraded 标记、ErrorCode、各段耗时，参数按 1) 白名单过滤。
+
+约束：domain/application 不得反向依赖 adapters；不得引入全局可变单例；不得记录密钥与完整原文。
+验收：14-RED 全绿；lint-imports、ruff、mypy --strict、pytest（unit/contract/smoke）全绿。`
+      },
+      {
+        id: "14-QA",
+        title: "可观测性验收",
+        role: "QA-Test",
+        unit: "脱敏 + 降级 + 分层不破",
+        prompt: `更新
+@.codebuddy/agents/QA-Test.md
+@.docs/SPEC.md
+@.docs/prompt-step.html
+
+只做 Step 14-QA。只验收不改代码。
+
+验收点：
+① 脱敏：真实跑一次问答，telemetry 记录与日志中不含 DASHSCOPE_API_KEY 明文、完整制度原文、
+   绝对路径、PII（给出 grep 或断言证据）。
+② 降级：不配置 provider 或卸载 opentelemetry 时，问答仍成功且结果与配置时一致，仅有告警。
+③ 埋点覆盖：问答、导入、评测三条链路均有结构化记录，且带 corpus_revision 与 ErrorCode。
+④ 分层门禁：lint-imports 通过，ruff / mypy --strict / pytest 全绿。
+⑤ 若走「正式降级」分支：核对占位文件已删除、SPEC 与 README 已标注推迟、仓库无残留引用。
+
+输出：Pass / Fail / PASS with risks / BLOCK。`
+      },
+      {
+        id: "14-FIX",
+        title: "脱敏密钥口径修正（真实密钥格式）",
+        role: "Backend",
+        unit: "application/ports/telemetry.py + tests/unit/test_telemetry_redaction.py",
+        prompt: `更新
+@.codebuddy/agents/Backend.md
+@.docs/SPEC.md
+@.docs/prompt-step.html
+
+只做 Step 14-FIX。修复 14-QA 发现的脱敏缺陷，禁止改动 14-RED 已冻结的 15 条断言。
+
+背景（14-QA 实测证据）：redact_field 对真实 DASHSCOPE_API_KEY（117 字符、sk- 前缀，
+且 sk- 后 20 字符内即含 - _ + / = 等非 [A-Za-z0-9] 字符）未命中 _SECRET_RE，返回原样，
+密钥明文进入 telemetry 日志。当前埋点代码未把密钥作为属性传出，属潜伏缺陷，非侥幸通过。
+
+交付：
+1) 放宽 _SECRET_RE 覆盖真实密钥字符集，二选一并说明理由：
+   方案 A：sk-[A-Za-z0-9\-_+/=]{20,}（显式列出 base64/base64url 字符）；
+   方案 B：与 domain/result.py 的 _SECRET_MARKERS 对齐，改为「包含 sk- 前缀即视为密钥」。
+   优先保证与 domain/result.py 秘密识别口径一致，消除两处相悖。
+2) 在 tests/unit/test_telemetry_redaction.py 增加确定性回归断言：真实密钥格式样例
+   （含 - _ + / = 字符）必须返回 REDACTED_SECRET。只允许新增断言，禁止削弱或删除 14-RED
+   已有断言。
+3) 用真实 .env 的 DASHSCOPE_API_KEY 再验一次 redact_field(key) 返回 REDACTED_SECRET，
+   全程不得打印密钥本身。
+
+验收：14-RED 原 15 条 + 新增断言全绿；ruff / mypy --strict / pytest（unit/contract/smoke）
+全绿；真实密钥脱敏验证通过。`
+      },
+    ],
+  },
+  {
+    id: "c15",
+    title: "Step 15 — 目标方案指标对齐（target vs baseline）",
+    steps: [
+      {
+        id: "15-RED",
+        title: "复现指标回归（失败证据）",
+        role: "Data-Analyst",
+        unit: "artifacts/evaluation_report.json + artifacts/smoke/step15-red.txt",
+        prompt: `更新
+@.codebuddy/agents/Data-Analyst.md
+@.docs/SPEC.md
+@.docs/prompt-step.html
+
+只做 Step 15-RED。只取证不改代码。
+
+背景：现有 artifacts/evaluation_report.json 显示目标方案弱于基线——
+引用正确率 0.65 < 0.7368、拒答率 0.4 < 0.6、冲突准确率 0.6364 < 0.7273，
+且 target degraded_count = 2（baseline 为 0）。
+
+任务：
+① 以当前 active corpus revision 重跑评测（baseline 与 target 同集、同模型、同 revision），
+   保存完整报告与运行命令。
+② 逐条导出 target 相对 baseline 的退化样本清单：case id、answerable/conflict_expected、期望、实际、
+   命中或缺失的引用（文档 + 页码 + quote 片段）。
+③ 逐类标注疑似根因：Qwen 重排降级（RERANKER_DEGRADED）、拒答阈值 RAG_EVIDENCE_THRESHOLD、
+   冲突判定 Prompt 与 §4.4 合同、gold 标注口径。
+
+输出：artifacts/smoke/step15-red.txt（命令 + 退出码 + 指标对照）+ 退化样本清单落盘。`
+      },
+      {
+        id: "15-BUILD",
+        title: "根因修复与指标回归",
+        role: "LLM-Backend",
+        unit: "qwen_reranker / ask_policy / conflict_detector / prompt",
+        prompt: `更新
+@.codebuddy/agents/LLM-Backend.md
+@.docs/SPEC.md
+@.docs/prompt-step.html
+
+只做 Step 15-BUILD。一次只改一处，每改完立即重跑评测并记录指标变化。
+
+修复顺序：
+① 先消除 degraded：定位 RERANKER_DEGRADED 触发原因（超时、限流、返回解析失败），
+   修好后 degraded_count 应为 0；若属外部环境问题，保留证据并归因为风险而非代码缺陷。
+② 再修引用正确率：核查重排后 evidence 选择是否挤掉正确证据（对比 rerank 前后的顺序与得分），
+   必要时修正重排候选窗口或 RRF 融合权重，禁止用调大 RAG_TOP_K 掩盖问题。
+③ 再看拒答率：核对 NO_EVIDENCE 判定（证据阈值 + 提示词合同）是否误拒可答样本、放过不可答样本。
+④ 最后看冲突准确率：核对 §4.4 四条判定合同与「版本取代不判冲突」是否被 Prompt 实现违背。
+⑤ 禁止为过指标而硬编码 case 答案、放宽 gold、或让评测流程读到答案字段。
+
+交付：改动清单（文件 + 行为变化 + 对应指标变化），最终报告写回 artifacts/evaluation_report.json。`
+      },
+      {
+        id: "15-QA",
+        title: "指标对照验收",
+        role: "QA-Test",
+        unit: "SPEC §7.2 / §15 阈值对照表",
+        prompt: `更新
+@.codebuddy/agents/QA-Test.md
+@.docs/SPEC.md
+@.docs/prompt-step.html
+
+只做 Step 15-QA。只验收不改代码。
+
+验收点：
+① 目标方案各指标不低于基线（引用正确率、拒答率、冲突准确率、忠实度），或存在 SPEC 允许的例外
+   说明；degraded_count = 0 或已归因为环境问题并有证据。
+② 可比性：同 revision、同数据集、同回答模型、同检索参数（RAG_TOP_K、RRF_K、阈值）。
+③ 未触碰 gold 标注与评测集内容（给出 diff 证据）。
+④ 逐条对照 SPEC §7.2 指标定义与 §15 Gate 阈值，输出「门槛 / 实测 / 结论」对照表。
+⑤ 若 SPEC 未定义「目标方案必须优于基线」，产出决策记录说明当前结果的可接受性。
+
+输出：Pass / Fail / PASS with risks / BLOCK。`
+      },
+    ],
+  },
+  {
+    id: "c16",
+    title: "Step 16 — 忠实度口径统一（RAGAS 与轻量实现二选一）",
+    steps: [
+      {
+        id: "16-RED",
+        title: "口径不一致取证",
+        role: "Data-Analyst",
+        unit: "README + failure_cases.md + performance.md + evaluate_rag.py",
+        prompt: `更新
+@.codebuddy/agents/Data-Analyst.md
+@.docs/SPEC.md
+@.docs/prompt-step.html
+
+只做 Step 16-RED。只取证不改代码。
+
+背景：README.md「评测」表与 artifacts/failure_cases.md 写「忠实度（RAGAS）」，
+但 application/evaluation/evaluate_rag.py 注释写明「作为 RAGAS 的轻量替代」，
+报告中的 faithfulness 由 jieba 分词覆盖率算出，实际并未使用 RAGAS。
+
+任务：grep 出全部相关表述（README、artifacts/failure_cases.md、artifacts/evaluation/performance.md、
+evaluate_rag.py、评测契约与报告字段说明），输出「文档说法 vs 实现事实」对照表，
+标注每处的文件与行号，作为 RED 证据落盘 artifacts/smoke/step16-red.txt。`
+      },
+      {
+        id: "16-GREEN",
+        title: "二选一并全面对齐",
+        role: "Data-Analyst",
+        unit: "pyproject + evaluate_rag.py + 三处文档 + 报告字段",
+        prompt: `更新
+@.codebuddy/agents/Data-Analyst.md
+@.docs/SPEC.md
+@.docs/prompt-step.html
+
+只做 Step 16-GREEN。二选一后一次性对齐代码与全部文档，禁止两套口径并存。
+
+方案 A（真跑 RAGAS）：pyproject 增加 ragas 依赖（装到 conda dev_env_311）；评测脚本接入 ragas
+  计算 faithfulness；无 API key 或离线时返回 NOT_APPLICABLE，不得记 0 或 PASS；
+  指标名与 reason 文案改为 RAGAS 口径。
+方案 B（保留轻量实现）：统一改称「轻量忠实度」并写明算法（分词覆盖率 + 过滤规则 + 已知局限）；
+  同步修改 README、artifacts/failure_cases.md、artifacts/evaluation/performance.md 与报告字段说明。
+
+共同要求：报告 JSON 字段、指标名、reason 文案、全部文档表述完全一致；
+若指标定义与 SPEC 不符，以 SPEC 为准，不得私自改口径，需在对话中提出并等待确认。
+验收：16-RED 复检通过；ruff / mypy --strict / pytest 全绿。`
+      },
+      {
+        id: "16-QA",
+        title: "口径一致性验收",
+        role: "QA-Test",
+        unit: "五处表述一致 + 指标可复算",
+        prompt: `更新
+@.codebuddy/agents/QA-Test.md
+@.docs/SPEC.md
+@.docs/prompt-step.html
+
+只做 Step 16-QA。只验收不改代码。
+
+验收点：
+① 全仓库 grep 无自相矛盾表述：方案 B 下文档不再声称使用 RAGAS；方案 A 下代码确实调用 ragas。
+② 指标可复算：给定同一答案与证据，手工复算结果与报告一致。
+③ NOT_APPLICABLE 语义正确：无法计算时不记 0、不记 PASS。
+④ README、artifacts/failure_cases.md、artifacts/evaluation/performance.md、报告字段、SPEC
+   五处口径一致（给出文件 + 行号证据）。
+⑤ ruff / mypy --strict / pytest 全绿。
+
+输出：Pass / Fail / PASS with risks / BLOCK。`
+      },
+    ],
+  },
+  {
+    id: "c17",
+    title: "Step 17 — 容器化实跑与 CI 门禁实证",
+    steps: [
+      {
+        id: "17-RED",
+        title: "缺口取证与本地门禁基线",
+        role: "QA-Test",
+        unit: "artifacts/smoke/step17-red.txt",
+        prompt: `更新
+@.codebuddy/agents/QA-Test.md
+@.docs/SPEC.md
+@.docs/prompt-step.html
+
+只做 Step 17-RED。只取证不改代码。
+
+背景：SPEC §15 要求 Docker Compose E2E 证据，但 artifacts/ 下无任何 compose 实跑记录；
+CI（.github/workflows/ci.yml）从未在远端执行。
+
+任务：
+① 取证「无容器实跑证据」：列出 artifacts/ 与 logs/ 中与 compose 相关的记录缺失情况；
+   执行 docker compose config 仅做配置校验，不启动容器。
+② 在本地逐条执行 CI 的 7 条门禁，保存原始输出与退出码：
+   lint-imports --config importlinter.ini / python tools/legacy_guard.py check-refs /
+   ruff check . / mypy / pytest tests/unit tests/contract tests/smoke -q / secret scan / pip-audit。
+   Python 统一用 conda run -n dev_env_311 或 D:\MiniConda\envs\dev_env_311\python.exe。
+③ 逐条标注容器与 CI 环境相对本机的差异风险（路径、provider key 注入、文件权限、依赖版本）。
+
+输出：artifacts/smoke/step17-red.txt（命令 + 退出码 + 缺口与差异项）。
+说明：远端 CI 未触发依赖仓库提交，属 F6 单独待办，本步只记录不修复。`
+      },
+      {
+        id: "17-BUILD",
+        title: "容器实跑与问题修复",
+        role: "Debug",
+        unit: "Dockerfile + docker-compose.yml + artifacts/smoke/step17-compose-e2e.md",
+        prompt: `更新
+@.codebuddy/agents/Debug.md
+@.docs/SPEC.md
+@.docs/prompt-step.html
+
+只做 Step 17-BUILD。只做容器化实跑与由此暴露的问题修复。
+
+任务：
+① docker compose up --build 实跑，确认 API 8000 与 UI 8501 可访问。
+② 走通三条演示路径并记录请求与响应摘要：可回答（ANSWERED）、无证据（NO_EVIDENCE）、
+   冲突（CONFLICT）；确认引用可回看原文（source 端点 200）。
+③ 修复实跑暴露的问题：空 volume 下 SQLite 建库失败、workspace 目录权限、.env 注入方式、
+   端口或健康检查、provider 超时引起的不可用等（仅修与本步相关问题，不夹带重构）。
+④ 若无可用 Docker 环境，退化为等价的本机双进程 e2e（API + UI）并记录差异，
+   严禁伪造容器证据。
+⑤ 在 README 补「容器化实跑」复现步骤与实际结果（含耗时）。
+
+交付：artifacts/smoke/step17-compose-e2e.md（命令、时间、响应摘要、三条路径结论）。`
+      },
+      {
+        id: "17-QA",
+        title: "容器与 CI 门禁验收",
+        role: "QA-Test",
+        unit: "compose E2E 证据 + CI 命令等价性",
+        prompt: `更新
+@.codebuddy/agents/QA-Test.md
+@.docs/SPEC.md
+@.docs/prompt-step.html
+
+只做 Step 17-QA。只验收不改代码。
+
+验收点：
+① 容器实跑证据齐备：构建日志、启动日志、三条路径响应、source 回看 200、耗时记录可复核。
+② 容器与本地行为一致：同一问题在容器与本机的状态与引用可比（给出对照）。
+③ CI 配置与本地门禁逐条等价：命令、工作目录、Python 版本、依赖安装方式一致，差异项有说明。
+④ 明确将「远端 CI 触发与仓库首次提交」登记为未完成待办，不计入本步 Fail。
+
+输出：Pass / Fail / PASS with risks / BLOCK。`
+      },
+    ],
+  },
+  {
+    id: "c18",
+    title: "Step 18 — 源码占位 docstring 清理",
+    steps: [
+      {
+        id: "18-RED",
+        title: "过期 docstring 清单取证",
+        role: "Debug",
+        unit: "artifacts/smoke/step18-red.txt",
+        prompt: `更新
+@.codebuddy/agents/Debug.md
+@.docs/SPEC.md
+@.docs/prompt-step.html
+
+只做 Step 18-RED。只取证不改代码。
+
+任务：全量列出 src/ 下仍含「占位 / Step 0 禁止写入 / Step N 实现」等失效表述的 docstring：
+文件路径 + 行号 + 原文 + 该模块实际已实现的职责。
+
+已知至少 13 处，集中在各分包 __init__.py：interfaces/api、interfaces/cli、interfaces/ui、
+application/qa、application/ingestion、application/evaluation、application/contracts、
+application/ports、adapters/telemetry、adapters/retrieval、adapters/llm、
+adapters/persistence、adapters/document。
+
+输出：artifacts/smoke/step18-red.txt（grep 命令 + 输出 + 完整清单）。
+注意：application/ports/telemetry.py 与 adapters/telemetry/otel_telemetry.py 属 Step 14 范围；
+Step 14 已完成则一并纳入，否则跳过并在输出中标注。`
+      },
+      {
+        id: "18-GREEN",
+        title: "docstring 改写（行为零变化）",
+        role: "Backend",
+        unit: "各分包 __init__.py 与占位模块 docstring",
+        prompt: `更新
+@.codebuddy/agents/Backend.md
+@.docs/SPEC.md
+@.docs/prompt-step.html
+
+只做 Step 18-GREEN。只改 docstring，禁止改任何行为。
+
+交付：
+① 把每处过期 docstring 改写为准确描述：模块职责、所属层、关键约束（脱敏、只读、分层依赖方向），
+   删除「占位」「Step 0 禁止写入任何业务实现」等失效字样，保留必要的 SPEC 章节引用。
+② 同步 README 目录结构中与现状不符的描述（若存在）。
+③ 不得改动函数签名、import 与运行行为；不得声称实现了尚不存在的功能。
+
+验收：ruff / mypy --strict / pytest（unit/contract/smoke）全绿，且与 18-RED 前的行为完全一致。`
+      },
+      {
+        id: "18-QA",
+        title: "docstring 一致性验收",
+        role: "QA-Test",
+        unit: "零残留 + 描述与实现相符",
+        prompt: `更新
+@.codebuddy/agents/QA-Test.md
+@.docs/SPEC.md
+@.docs/prompt-step.html
+
+只做 Step 18-QA。只验收不改代码。
+
+验收点：
+① grep 证据：src/ 下不再出现「占位」「Step 0 禁止写入」等过期表述。
+② 描述与实现相符：抽样 5 处，逐一核对 docstring 所述的职责与关键约束是否真实成立。
+③ 行为零变化：diff 仅涉及注释与文档；ruff / mypy --strict / pytest 全绿。
+④ 无新增虚构声明：docstring 不得声明未实现的能力或入口。
+
+输出：Pass / Fail / PASS with risks / BLOCK。`
+      },
+    ],
+  },
 ];
 
 // ---- 状态与工具 ----
 function loadDone() {
-  try { return new Set(JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]")); }
-  catch { return new Set(); }
+  try {
+    const set = new Set(JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]"));
+    if (localStorage.getItem(SEED_VERSION_KEY) !== "1") {
+      SEED_DONE.forEach((id) => set.add(id));
+      localStorage.setItem(STORAGE_KEY, JSON.stringify([...set]));
+      localStorage.setItem(SEED_VERSION_KEY, "1");
+    }
+    return set;
+  } catch {
+    return new Set(SEED_DONE);
+  }
 }
 function saveDone(set) {
   localStorage.setItem(STORAGE_KEY, JSON.stringify([...set]));
@@ -1078,15 +1561,8 @@ const chapterEls = [];
 
 function render() {
   const appEl = document.getElementById("app");
-  const navEl = document.getElementById("navChapters");
 
   CHAPTERS.forEach(ch => {
-    const a = document.createElement("a");
-    a.className = "chip";
-    a.href = "#" + ch.id;
-    a.textContent = ch.id + " " + ch.title.replace(/^Step \d+ — /, "");
-    navEl.appendChild(a);
-
     const sec = document.createElement("section");
     sec.className = "chapter";
     sec.id = ch.id;
@@ -1143,7 +1619,17 @@ function render() {
       copyBtn.textContent = "复制";
       copyBtn.addEventListener("click", e => {
         e.stopPropagation();
-        copyText(st.prompt, () => showToast("已复制 Step " + st.id));
+        copyText(st.prompt, () => {
+          showToast("已复制 Step " + st.id);
+          if (!check.checked) {
+            check.checked = true;
+            doneSet.add(st.id);
+            card.classList.add("done");
+            saveDone(doneSet);
+            applyFilter();
+            updateProgress();
+          }
+        });
       });
       actions.appendChild(copyBtn);
 

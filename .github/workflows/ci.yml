@@ -1,0 +1,58 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  quality-gate:
+    name: 质量门禁（SPEC §11.2 / §15 Gate 7）
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          # optional-dependencies.dev 与 dependency-groups.dev 对齐（见 pyproject.toml）
+          pip install -e ".[dev]" pip-audit
+          python -c "import pytest,ruff,mypy,importlinter; print('dev tools OK')"
+
+      # 1. 分层依赖（SPEC §2.1）
+      - name: import-linter
+        run: lint-imports --config importlinter.ini
+
+      # 2. 旧 CASE 只读防线（SPEC §1.1）：CI 无旧 CASE，只做运行时引用检查
+      - name: legacy guard check-refs
+        run: python tools/legacy_guard.py check-refs
+
+      # 3. 静态检查
+      - name: ruff
+        run: ruff check .
+
+      # 4. 严格类型检查（pyproject [tool.mypy] strict=true）
+      - name: mypy
+        run: mypy
+
+      # 5. 分层测试（unit / contract / smoke；integration 见本地全量）
+      - name: pytest
+        run: pytest tests/unit tests/contract tests/smoke -q
+
+      # 6. secret scan（与 telemetry redact 口径对齐：sk- + 20+ 非空白）
+      - name: Secret scan
+        run: |
+          if grep -rInE "sk-\\S{20,}" src --include="*.py"; then
+            echo "检测到疑似硬编码密钥，阻断。"; exit 1
+          else
+            echo "secret scan 通过（零硬编码密钥）。"
+          fi
+
+      # 7. 依赖安全（零高严重级别漏洞）
+      - name: dependency audit
+        run: pip-audit

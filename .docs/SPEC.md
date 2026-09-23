@@ -4,7 +4,7 @@
 | --- | --- |
 | 版本 | v0.1 Draft |
 | 对应 PRD | `PRD.md` v1.0 |
-| 项目规模 | S 级个人求职作品 |
+| 项目规模 | S 级个人独立开发项目 |
 | 架构形态 | Python 单栈、模块化单体、Clean Architecture |
 | 当前交付范围 | Phase 1 MVP |
 | 文档状态 | 待用户确认；确认后才生成 Prompt-Step 与进入实现 |
@@ -23,7 +23,7 @@
 
 ### 0.2 规模与单栈决策
 
-- 选择 **S 级**：3 个 P0、单人开发、本地求职 Demo，不满足拆微服务条件。
+- 选择 **S 级**：3 个 P0、单人开发、本地可交互 Demo，不满足拆微服务条件。
 - 选择 **Python 单栈**：FastAPI、Streamlit、Pydantic、SQLite、FAISS、BM25 与 Qwen/DashScope 均在一个仓库、一个领域模型和一套测试体系内。
 - FastAPI 与 Streamlit 是同一模块化单体的两个入口，不是两个独立业务服务；不得复制业务逻辑。
 - 不引入消息队列、Redis、PostgreSQL、Kubernetes、微服务、Agent 编排或对话记忆。
@@ -34,7 +34,7 @@
 | 领域 | 决策 | 原因 |
 | --- | --- | --- |
 | Web API | FastAPI + Pydantic | Python AI 生态一致，提供明确的校验与 OpenAPI。 |
-| Demo UI | Streamlit | 低成本完成可交互求职 Demo；UI 只调用 API。 |
+| Demo UI | Streamlit | 低成本完成可交互 Demo；UI 只调用 API。 |
 | 元数据 | SQLite + SQLAlchemy + Alembic | 单机可运行、可迁移、无需外部服务。 |
 | PDF 解析 | `DocumentParserPort` + MinerU 适配器 | 保留复杂 PDF 解析能力，同时隔离供应商与 I/O。 |
 | 文本切片 | Application 内的确定性页内切片策略 | 确保引用可定位；它是纯业务算法，不建立多余 Port，Phase 1 不启用 LLM 语义切片。 |
@@ -43,7 +43,7 @@
 | 融合 | Application 内的 Reciprocal Rank Fusion（RRF）纯函数 | 避免直接混合不同分值尺度，不建立多余 Port。 |
 | 重排 | `RerankerPort` + Qwen 结构化重排适配器 | 目标方案使用；失败时允许退化为 RRF 排序。 |
 | 回答生成 | `ChatModelPort` + Qwen/DashScope 适配器 | 模型可替换；输出必须通过 Pydantic 与引用校验。 |
-| 评测 | 固定 JSONL 数据集 + Recall@K + RAGAS/规则评测 + 人工抽检 | 同时验证检索、忠实度、引用和拒答。 |
+| 评测 | 固定 JSONL 数据集 + Recall@K + 轻量规则式忠实度（Phase 1 不引入 RAGAS）+ 人工抽检 | 同时验证检索、忠实度、引用和拒答。 |
 | 部署 | Docker Compose 本地演示 | 复现成本低，API/UI 仍共享一个代码仓库。 |
 
 ## 1. 新旧工程物理隔离
@@ -67,19 +67,27 @@
 3. 新工程禁止通过 `sys.path`、相对导入、动态加载、软链接或复制粘贴后保留原模块依赖来执行旧 CASE。
 4. 旧 CASE 只允许人工阅读和提炼设计思路；新实现必须使用新命名、新契约和新测试独立完成。
 5. Step 0 在首次实现前生成 `tools/legacy_manifest.json`，记录每个旧文件的相对路径、大小与 SHA-256；本地 pre-commit 重新计算并阻断任何漂移。
-6. 新项目 Git 仓库只跟踪 PRD、SPEC 与 `enterprise_policy_rag/`；旧 CASE 不复制、不发布到新的求职仓库，CI 只检查新代码不存在旧目录名、旧模块或越界路径引用。
+6. 新项目 Git 仓库跟踪 `.docs/`（PRD/SPEC）、根 `.gitignore`、应用代码（仓库根下的 `src/`、`tests/`、`tools/`、配置与 Docker 等）；旧 CASE 不复制、不发布到新的项目仓库，CI 只检查新代码不存在旧目录名、旧模块或越界路径引用。
 7. `tools/legacy_guard.py` 同时执行“本地 hash 基线检查”和“新源码运行时引用检查”；CI 环境没有旧 CASE 时只执行后者，不将缺少外部参考目录误判为通过了 hash 检查。
-8. 任何需要保存的中间产物只能进入新工程的 `workspace/` 或 `artifacts/`。
+8. 任何需要保存的中间产物只能进入仓库根的 `workspace/` 或 `artifacts/`。
 
-### 1.2 新工程根目录
+### 1.2 仓库根 = 应用工程根
 
-所有新代码与运行产物统一进入：
+所有新应用代码与运行产物统一放在**仓库根目录**（与 `.docs/`、`.cursor/` 同级）。Python 包名仍为 `enterprise_policy_rag`（位于 `src/enterprise_policy_rag/`）。
 
 ```text
-enterprise_policy_rag/
+<repo-root>/
+├─ .docs/                 # PRD / SPEC / Prompt-Step
+├─ .cursor/               # Agent 规则
+├─ .github/               # CI
+├─ src/enterprise_policy_rag/   # 应用包
+├─ tests/
+├─ tools/
+├─ pyproject.toml
+└─ …
 ```
 
-Step 0 在当前项目根目录初始化 Git，仅跟踪 `PRD.md`、`SPEC.md`、根 `.gitignore` 与 `enterprise_policy_rag/`；根 `.gitignore` 明确排除五个旧 CASE 目录，旧 CASE 不移动进新工程，新工程也不在旧 CASE 内创建子目录。旧 CASE 的完整性由本地 SHA-256 manifest 负责，而不是依赖 Git 追踪。
+Step 0 在仓库根初始化 Git；根 `.gitignore` 明确排除五个旧 CASE 目录，旧 CASE 不移动进 Git 跟踪范围，也不在旧 CASE 内创建子目录。旧 CASE 的完整性由本地 SHA-256 manifest 负责，而不是依赖 Git 追踪。
 
 ### 1.3 旧 CASE 能力吸收矩阵
 
@@ -151,10 +159,13 @@ domain      → Python standard library only
 | `interfaces.cli` | 导入与评测命令入口 | Application | 复制业务流程 |
 | `adapters.telemetry` | 日志、Span、指标实现 | TelemetryPort | 记录原文、密钥或 PII |
 
-## 3. 新工程目录结构
+## 3. 仓库目录结构
 
 ```text
-enterprise_policy_rag/
+<repo-root>/
+├─ .docs/
+├─ .cursor/
+├─ .github/
 ├─ pyproject.toml
 ├─ uv.lock
 ├─ README.md
@@ -495,7 +506,7 @@ SQLite partial unique index：`status='ACTIVE'` 时最多一行；新 revision �
 | Refusal precision/recall | `answerable` | 全部样本 | 对有答案问题误拒答或对无答案问题编造。 |
 | Conflict accuracy | `conflict_expected` + 两组 gold evidence | 冲突与相邻非冲突样本 | 漏报冲突或把版本替代误判为冲突。 |
 
-- Recall@K 与引用正确率是确定性主指标；RAGAS 忠实度/答案指标是辅助指标，版本和模型配置必须锁定并记录。
+- Recall@K 与引用正确率是确定性主指标；忠实度（轻量规则式，Phase 1 不引入 RAGAS）/答案指标是辅助指标，版本和模型配置必须锁定并记录。
 - 基线与目标方案必须使用同一 corpus revision、同一评测集版本、同一回答模型与同一人工标注。
 - `expected_evidence_id` 不作为金标，因为切片参数改变会导致 chunk/evidence ID 漂移；金标使用稳定的文档引用、页码和原文短语。
 - 指标无法计算时返回 `NOT_APPLICABLE` 并说明缺少字段，不得记为 0 或 PASS。
@@ -793,7 +804,7 @@ Phase 1 仅在以下证据全部存在时通过：
 5. 纯向量基线与目标方案使用同一数据集完成对比，报告包含 Recall@K、忠实度、引用正确率、拒答率、延迟与退化标记。
 6. API、UI、Evaluation CLI 三个真实入口 smoke 通过且未超时。
 7. Domain 覆盖率、架构检查、合同测试、静态检查、安全扫描达到 DoD。
-8. README、演示截图/录屏、失败案例和测试输出可供面试复核。
+8. README、演示截图/录屏、失败案例和测试输出可供评审复核。
 
 # 第二部分：Phase 2/3 完整版候选
 
@@ -831,7 +842,7 @@ Phase 1 Gate 通过且用户确认真实需求后，才允许回到 PRD/架构�
 | 10 | 文档、问答与原文 API | 3,5,9 | Backend | FastAPI routes、source endpoint、HTTP 合同 | 真实 API smoke；合法页成功、越界路径拒绝 |
 | 11 | Streamlit Demo UI | 10 | Frontend | UI 与 API client | Headless 启动/DOM smoke，显示状态、答案与引用 |
 | 12 | 基线对比评测闭环 | 6,7,9 | Data Analyst / QA | 20+ gold cases、Evaluation CLI、指标适用性报告 | 同 revision/数据集/模型生成可复核对比 |
-| 13 | 全链路质量门禁与求职证据 | 0–12 | QA / Debug | CI、性能报告、失败案例、Demo 证据 | Docker Compose E2E 与全部 Gate |
+| 13 | 全链路质量门禁与交付证据 | 0–12 | QA / Debug | CI、性能报告、失败案例、Demo 证据 | Docker Compose E2E 与全部 Gate |
 
 ```text
 SPEC confirmed

@@ -1,0 +1,102 @@
+[project]
+name = "enterprise-policy-rag"
+version = "0.1.0"
+description = "企业内部制度知识库问答系统（Phase 1 MVP）：从制度 PDF 检索证据并生成可回看原文、证据不足时拒答的答案。"
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "Proprietary" }
+authors = [{ name = "Enterprise Policy RAG" }]
+dependencies = [
+    "fastapi>=0.110",
+    "uvicorn[standard]>=0.29",
+    "pydantic>=2.6",
+    "pydantic-settings>=2.2",
+    "sqlalchemy>=2.0",
+    "alembic>=1.13",
+    "streamlit>=1.33",
+    "dashscope>=1.17",
+    "faiss-cpu>=1.8",
+    "rank-bm25>=0.2.2",
+    "jieba>=0.42.1",
+    "httpx>=0.27",
+    "python-dotenv>=1.0",
+    "pypdf>=6.0",
+]
+
+# 说明：以下依赖在对应 Step 实现时按需引入（避免过早锁定重型依赖）。
+# - mineru（PDF 解析适配器，Phase 1 用 pypdf 替代，见 adapters/document/pypdf_parser.py）
+# - ragas（RAGAS 评测，Step 12，当前用轻量规则式忠实度替代）
+# - opentelemetry-api / opentelemetry-sdk（结构化可观测性，Step 13/14，见 optional 组 telemetry）
+
+# CI / pip extras 入口（与 [dependency-groups].dev 内容对齐，供 `pip install -e ".[dev]"`）
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0",
+    "pytest-cov>=5.0",
+    "pytest-timeout>=2.2",
+    "ruff>=0.4",
+    "mypy>=1.9",
+    "import-linter>=2.0",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=8.0",
+    "pytest-cov>=5.0",
+    "pytest-timeout>=2.2",
+    "ruff>=0.4",
+    "mypy>=1.9",
+    "import-linter>=2.0",
+]
+telemetry = [
+    "opentelemetry-api>=1.20",
+    "opentelemetry-sdk>=1.20",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/enterprise_policy_rag"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
+addopts = "-ra --strict-markers"
+timeout = 60
+timeout_method = "thread"
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+src = ["src"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "SIM", "S"]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**" = ["S101"]
+
+[tool.mypy]
+python_version = "3.11"
+strict = true
+files = ["src/enterprise_policy_rag"]
+plugins = ["pydantic.mypy"]
+# FastAPI 的 @router 装饰器无类型签名，端点函数体已具完整类型注解，关闭该 strict 子项。
+disallow_untyped_decorators = false
+# 使 follow_imports=skip 对 stub 同样生效（默认 mypy 总会解析 .pyi）。
+follow_imports_for_stubs = true
+
+# numpy>=2.2 stubs 使用 PEP 695 `type` 语句，mypy 在 python_version=3.11 下无法解析；
+# 跳过跟随 numpy（含 stub），避免与锁定解释器（conda/dev_env_311 / requires-python>=3.11）冲突。
+# 不关闭 strict，不 ignore 本仓库源文件。
+[[tool.mypy.overrides]]
+module = ["numpy", "numpy.*"]
+follow_imports = "skip"
+
+[tool.coverage.run]
+source = ["enterprise_policy_rag"]
+
+[tool.coverage.report]
+show_missing = true
