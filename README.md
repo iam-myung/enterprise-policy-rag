@@ -8,9 +8,9 @@
 
 约 1 分钟无旁白短片：入库 → 提问 → 引用与置信度 → 拒答 / 冲突三态。
 
-[![产品演示封面](assets/demo-poster.jpg)](https://iam-myung.github.io/enterprise-policy-rag/demo.html)
+[![产品演示封面](docs/demo-poster.jpg)](https://iam-myung.github.io/enterprise-policy-rag/demo.html)
 
-**[在线观看（GitHub Pages）](https://iam-myung.github.io/enterprise-policy-rag/demo.html)** · 下载 [`assets/demo.mp4`](assets/demo.mp4)（约 2.5MB / 57 秒）
+**[在线观看（GitHub Pages）](https://iam-myung.github.io/enterprise-policy-rag/demo.html)** · 下载 [`docs/demo.mp4`](docs/demo.mp4)（约 2.5MB / 57 秒）
 
 > 首次使用需在 GitHub 仓库 **Settings → Pages** 中：Source 选 `Deploy from a branch`，Branch 选 `main` / `/docs`，保存后等待 1～2 分钟再打开上方链接。
 >
@@ -130,6 +130,6 @@ python tools/legacy_guard.py gen         # 重新生成基线
 
 ## 文档
 
-- 产品演示：[`docs/demo.html`](docs/demo.html)（GitHub Pages）· [`assets/demo.mp4`](assets/demo.mp4)
+- 产品演示：[`docs/demo.html`](docs/demo.html)（GitHub Pages）· [`docs/demo.mp4`](docs/demo.mp4)
 - 产品/技术设计文档在本地 `.docs/`（不纳入本公开仓库）
 - 许可证：[MIT License](LICENSE)
