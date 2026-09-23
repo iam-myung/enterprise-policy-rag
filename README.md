@@ -2,6 +2,8 @@
 
 面向新员工的企业制度问答系统：从考勤、请假、报销制度 PDF 中检索证据，生成可回看原文、且证据不足时拒答的答案。
 
+仓库：https://github.com/iam-myung/enterprise-policy-rag · 许可证：[MIT](LICENSE)
+
 ## 核心能力
 
 - **混合检索**：DashScope Embedding + FAISS（稠密）+ BM25（稀疏）+ RRF 融合 + Qwen 重排
@@ -32,8 +34,12 @@ domain      → Python 标准库 only
 
 ```powershell
 # 推荐：Conda 环境 dev_env_311（与仓库工程规则一致）
-# 首次：pip install -e .
-$py = "D:\MiniConda\envs\dev_env_311\python.exe"   # 按本机 conda 路径调整
+# 克隆后：复制 .env.example 为 .env，填入 DASHSCOPE_API_KEY
+# 首次安装：pip install -e ".[dev]"
+# 解析解释器（任选其一）：
+#   conda run -n dev_env_311 python -c "import sys; print(sys.executable)"
+#   或手动：$py = "<你的 conda envs>/dev_env_311/python.exe"
+$py = "D:\MiniConda\envs\dev_env_311\python.exe"   # 示例路径，按本机调整
 
 # 1. 启动 API（默认 http://127.0.0.1:8001，见 .env APP_PORT）
 $env:PYTHONPATH = "src"
@@ -68,7 +74,7 @@ docker compose up --build
    - 冲突：`{"question":"员工年假到底是几天？"}` → `CONFLICT` + 两份依据（约 6.0s）
 3. 引用回看：`GET /api/v1/documents/{id}/source?page=N` → 200（`application/pdf`）。
 
-证据：`artifacts/smoke/step17-compose-e2e.md`。
+（Compose 实跑摘要见上；本地证据目录不纳入仓库。）
 
 ## 评测
 
@@ -114,3 +120,4 @@ python tools/legacy_guard.py gen         # 重新生成基线
 
 - 唯一事实来源：`.docs/SPEC.md`
 - 开发契约：`.docs/SPEC.md` §11
+- 许可证：[MIT License](LICENSE)
